@@ -27,6 +27,7 @@ from src.agent.actions import (
 )
 from src.agent.state import AgentState, AgentResult
 from src.agent.prompts import SYSTEM_PROMPT, build_step_prompt
+from src.agent.verifier import verify_evidence_in_page, verify_answer_with_llm
 
 logger = logging.getLogger(__name__)
 
@@ -191,27 +192,82 @@ class AgentOrchestrator:
 
             # 7. Execute validated action
             if isinstance(action, AnswerAction):
-                # Phase 3 basic evidence check: quote must be in visited page
-                quote = action.evidence_quote.strip()
-                stored_page = state.page_contents.get(resolved_url, "")
-                if quote and quote in stored_page:
-                    return state.finish_with_answer(
-                        answer=action.answer,
-                        evidence_quote=action.evidence_quote,
-                        source_url=action.source_url or resolved_url,
+                await self._emit_progress(
+                    progress_callback,
+                    "verifying",
+                    {"step": state.step_count, "quote": action.evidence_quote},
+                )
+
+                # Check 1: Deterministic Code Check (verbatim quote in visited page)
+                target_url = action.source_url or resolved_url
+                page_text = state.page_contents.get(target_url, "")
+                if not page_text and resolved_url in state.page_contents:
+                    page_text = state.page_contents[resolved_url]
+                    target_url = resolved_url
+
+                quote_valid, code_check_msg = verify_evidence_in_page(action.evidence_quote, page_text)
+                if not quote_valid:
+                    # Also check if quote appears on ANY other previously visited page
+                    for past_url, past_text in state.page_contents.items():
+                        past_valid, _ = verify_evidence_in_page(action.evidence_quote, past_text)
+                        if past_valid:
+                            quote_valid = True
+                            target_url = past_url
+                            code_check_msg = "Match found on previously visited page."
+                            break
+
+                if not quote_valid:
+                    logger.warning("Code check failed for answer quote: %s", code_check_msg)
+                    await self._emit_progress(
+                        progress_callback,
+                        "answer_rejected",
+                        {"reason": f"Code check failed: {code_check_msg}"},
                     )
-                else:
-                    logger.warning("Evidence quote not found verbatim in page text. Prompting next step.")
-                    # If quote failed, let loop continue or fall back
-                    if ranked_links:
-                        state.current_url = ranked_links[0].url
+                    # Reject and navigate to next unvisited link
+                    fallback_link = next((l for l in ranked_links if not state.has_visited(l.url)), None)
+                    if fallback_link:
+                        state.current_url = fallback_link.url
                         continue
                     else:
-                        return state.finish_with_answer(
-                            answer=action.answer,
-                            evidence_quote=action.evidence_quote,
-                            source_url=action.source_url or resolved_url,
+                        return state.finish_not_found(
+                            explanation=f"Proposed answer quote was not found verbatim in page content ({code_check_msg})."
                         )
+
+                # Check 2: Secondary LLM Verification Pass
+                llm_valid, llm_reason = await verify_answer_with_llm(
+                    llm=self.llm,
+                    question=state.question,
+                    evidence_quote=action.evidence_quote,
+                    proposed_answer=action.answer,
+                )
+
+                if not llm_valid:
+                    logger.warning("LLM verification pass rejected answer: %s", llm_reason)
+                    await self._emit_progress(
+                        progress_callback,
+                        "answer_rejected",
+                        {"reason": f"LLM verification rejected: {llm_reason}"},
+                    )
+                    fallback_link = next((l for l in ranked_links if not state.has_visited(l.url)), None)
+                    if fallback_link:
+                        state.current_url = fallback_link.url
+                        continue
+                    else:
+                        return state.finish_not_found(
+                            explanation=f"Proposed answer was rejected by verification pass: {llm_reason}"
+                        )
+
+                # Both checks passed! Return verified answer
+                await self._emit_progress(
+                    progress_callback,
+                    "answer_accepted",
+                    {"answer": action.answer, "source_url": target_url},
+                )
+                return state.finish_with_answer(
+                    answer=action.answer,
+                    evidence_quote=action.evidence_quote,
+                    source_url=target_url,
+                )
 
             elif isinstance(action, GiveUpAction):
                 logger.info("Agent decided to give up: %s", action.reason)
