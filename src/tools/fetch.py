@@ -1,10 +1,13 @@
 import logging
 import time
 from typing import Optional
+from urllib.parse import urlparse
 import httpx
 from pydantic import BaseModel, Field
 
 from src.config import settings
+from src.safety.url_guard import is_safe_url
+from src.safety.robots import default_robots_cache, default_rate_limiter
 
 logger = logging.getLogger(__name__)
 
@@ -32,17 +35,21 @@ class FetchResult(BaseModel):
 
 
 class PageFetcher:
-    """Async HTTP page fetcher with size limits, timeout, and redirect handling."""
+    """Async HTTP page fetcher with SSRF protection, robots.txt compliance, and size capping."""
 
     def __init__(
         self,
         user_agent: Optional[str] = None,
         timeout: Optional[float] = None,
         max_size_bytes: Optional[int] = None,
+        check_safety: bool = True,
+        check_robots: bool = True,
     ):
         self.user_agent = user_agent or settings.user_agent
         self.timeout = timeout or 15.0
         self.max_size_bytes = max_size_bytes or settings.max_page_size_bytes
+        self.check_safety = check_safety
+        self.check_robots = check_robots
         self.headers = {
             "User-Agent": self.user_agent,
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
@@ -50,8 +57,43 @@ class PageFetcher:
         }
 
     async def fetch(self, url: str) -> FetchResult:
-        """Fetch URL asynchronously, validating content type and capping size."""
+        """Fetch URL asynchronously, enforcing SSRF safety, robots.txt, and content validation."""
         start_time = time.perf_counter()
+
+        # 1. SSRF URL Guard check
+        if self.check_safety:
+            safe, reason = is_safe_url(url)
+            if not safe:
+                logger.warning("SSRF block on target URL %s: %s", url, reason)
+                return FetchResult(
+                    url=url,
+                    final_url=url,
+                    status_code=0,
+                    html="",
+                    elapsed_seconds=time.perf_counter() - start_time,
+                    error=f"Security block (SSRF protection): {reason}",
+                    is_success=False,
+                )
+
+        # 2. Robots.txt check
+        if self.check_robots:
+            allowed = await default_robots_cache.can_fetch(url)
+            if not allowed:
+                logger.info("URL disallowed by robots.txt: %s", url)
+                return FetchResult(
+                    url=url,
+                    final_url=url,
+                    status_code=403,
+                    html="",
+                    elapsed_seconds=time.perf_counter() - start_time,
+                    error="Fetching disallowed by site robots.txt policy.",
+                    is_success=False,
+                )
+
+        # 3. Polite host rate limiting
+        host = urlparse(url).netloc.lower()
+        await default_rate_limiter.wait_if_needed(host)
+
         try:
             async with httpx.AsyncClient(
                 headers=self.headers,
@@ -59,11 +101,25 @@ class PageFetcher:
                 follow_redirects=True,
                 limits=httpx.Limits(max_keepalive_connections=5, max_connections=10),
             ) as client:
-                # First send a streaming GET or standard GET
                 response = await client.get(url)
                 elapsed = time.perf_counter() - start_time
                 final_url = str(response.url)
                 content_type = response.headers.get("content-type", "").lower()
+
+                # Re-verify final_url after redirects to guard against open redirect SSRF
+                if self.check_safety and final_url != url:
+                    final_safe, final_reason = is_safe_url(final_url)
+                    if not final_safe:
+                        logger.warning("SSRF block on redirected URL %s: %s", final_url, final_reason)
+                        return FetchResult(
+                            url=url,
+                            final_url=final_url,
+                            status_code=0,
+                            html="",
+                            elapsed_seconds=elapsed,
+                            error=f"Security block on redirect target: {final_reason}",
+                            is_success=False,
+                        )
 
                 # Validate content type: ignore binary downloads (pdf, zip, exe, images, etc.)
                 if not any(allowed in content_type for allowed in ALLOWED_CONTENT_TYPES):

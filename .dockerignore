@@ -1,0 +1,14 @@
+.git
+.venv
+venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.env
+.pytest_cache
+tests/
+eval/results/
+eval/report.json
+.DS_Store
+Thumbs.db

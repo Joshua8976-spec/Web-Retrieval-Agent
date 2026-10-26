@@ -16,6 +16,8 @@ __pycache__/
 .pytest_cache/
 .coverage
 htmlcov/
+eval/report.json
+eval/results/
 
 # IDE & Editor folders
 .vscode/
