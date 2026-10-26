@@ -1,0 +1,24 @@
+# Core LLM and Data Modeling
+openai>=1.30.0
+pydantic>=2.7.0
+pydantic-settings>=2.2.0
+python-dotenv>=1.0.1
+
+# HTTP and Web Extraction
+httpx>=0.27.0
+trafilatura>=1.8.0
+selectolax>=0.3.21
+markdownify>=0.12.1
+rank-bm25>=0.2.2
+
+# API and Server
+fastapi>=0.111.0
+uvicorn>=0.30.0
+
+# Testing
+pytest>=8.2.0
+pytest-asyncio>=0.23.6
+respx>=0.21.1
+
+# Optional fallback browser (installed on demand)
+# playwright>=1.44.0
