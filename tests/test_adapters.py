@@ -105,3 +105,13 @@ async def test_http_api_retrieve_post():
             data = resp.json()
             assert data["found"] is True
             assert data["answer"] == "FastAPI is fast"
+
+
+@pytest.mark.asyncio
+async def test_http_api_serves_ui():
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        resp = await client.get("/")
+        assert resp.status_code == 200
+        assert "Web Retrieval Agent" in resp.text
+        assert "Initiate Retrieval Run" in resp.text
