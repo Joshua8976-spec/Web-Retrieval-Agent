@@ -76,11 +76,18 @@ async def test_process_task_file(tmp_tasks_json, tmp_path):
 async def test_http_api_health():
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
-        with patch("src.adapters.http_api.default_llm_client.check_connection", return_value={"status": "connected"}):
-            resp = await client.get("/api/health")
+        # Fast liveness check
+        resp = await client.get("/api/health")
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["status"] == "healthy"
+        assert data["llm_endpoint"]["status"] == "ready"
+
+        # Deep LLM connectivity probe
+        with patch("src.adapters.http_api.default_llm_client.async_check_connection", new_callable=AsyncMock, return_value={"status": "connected"}):
+            resp = await client.get("/api/health?check_llm=true")
             assert resp.status_code == 200
             data = resp.json()
-            assert data["status"] == "healthy"
             assert data["llm_endpoint"]["status"] == "connected"
 
 

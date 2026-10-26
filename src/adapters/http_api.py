@@ -40,9 +40,13 @@ class RetrievalRequest(BaseModel):
 
 
 @app.get("/api/health")
-async def health_check():
-    """Health check endpoint that verifies server and LLM connectivity."""
-    llm_status = default_llm_client.check_connection()
+async def health_check(check_llm: bool = False):
+    """Health check endpoint that verifies server liveness and optional LLM connectivity."""
+    if check_llm:
+        llm_status = await default_llm_client.async_check_connection()
+    else:
+        llm_status = {"status": "ready", "model": settings.llm_model}
+
     return {
         "status": "healthy",
         "version": "0.1.0",
@@ -53,6 +57,7 @@ async def health_check():
             "timeout_seconds": settings.agent_timeout_seconds,
         },
     }
+
 
 
 @app.post("/api/retrieve", response_model=AgentResult)
