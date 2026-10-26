@@ -68,13 +68,14 @@ class AgentOrchestrator:
         progress_callback: Optional[Callable[[Dict[str, Any]], Any]] = None,
     ) -> AgentResult:
         """Run the end-to-end information retrieval agent loop."""
-        state = AgentState(question=question, start_url=start_url)
-        logger.info("Starting retrieval run: '%s' on %s", question, start_url)
+        state = AgentState(question=question, start_url=normalize_url(start_url, start_url) or start_url)
+        logger.info("Starting retrieval run: '%s' on %s", question, state.start_url)
+        unvisited_queue: List[str] = []
 
         await self._emit_progress(
             progress_callback,
             "start",
-            {"question": question, "start_url": start_url},
+            {"question": question, "start_url": state.start_url},
         )
 
         while not state.is_complete:
@@ -89,9 +90,18 @@ class AgentOrchestrator:
 
             # 2. Prevent re-visiting the same page
             if state.has_visited(current_url):
-                logger.info("URL %s already visited. Seeking alternative.", current_url)
-                # Attempt to navigate to next unvisited link or terminate
-                pass
+                logger.info("URL %s already visited. Picking next unvisited candidate.", current_url)
+                next_url = None
+                while unvisited_queue:
+                    cand = unvisited_queue.pop(0)
+                    if not state.has_visited(cand):
+                        next_url = cand
+                        break
+                if next_url:
+                    current_url = next_url
+                    state.current_url = next_url
+                else:
+                    return state.finish_not_found(explanation="All navigable links on this site have been visited.")
 
             # 3. Fetch current page with retries
             fetch_result: Optional[FetchResult] = None
@@ -104,7 +114,7 @@ class AgentOrchestrator:
                 fetch_result = await self.fetcher.fetch(current_url)
                 if fetch_result.is_success:
                     break
-                
+
                 retry_count = state.record_fetch_retry(current_url)
                 logger.warning(
                     "Fetch attempt %d failed for %s: %s",
@@ -120,13 +130,22 @@ class AgentOrchestrator:
                     return state.finish_not_found(
                         explanation=f"Failed to fetch start URL: {fetch_result.error if fetch_result else 'Unknown'}"
                     )
-                # Otherwise, attempt to pick an unvisited link from history or give up
+                # Try next unvisited candidate from queue
+                next_url = None
+                while unvisited_queue:
+                    cand = unvisited_queue.pop(0)
+                    if not state.has_visited(cand):
+                        next_url = cand
+                        break
+                if next_url:
+                    state.current_url = next_url
+                    continue
                 return state.finish_not_found(
                     explanation=f"Encountered unreachable page {current_url}: {fetch_result.error if fetch_result else 'Network error'}"
                 )
 
-            # Record visit in state with actual resolved final URL
-            resolved_url = fetch_result.final_url
+            # Record visit in state with normalized URL
+            resolved_url = normalize_url(fetch_result.final_url, fetch_result.final_url) or fetch_result.final_url
             raw_html = fetch_result.html
             full_clean_text = extract_clean_text(raw_html)
             state.record_visit(resolved_url, full_clean_text)
@@ -144,7 +163,12 @@ class AgentOrchestrator:
                 current_url=resolved_url,
                 same_domain_only=not settings.allow_external_domains,
             )
-            # Filter out already visited links
+            # Add new unvisited links to global unvisited queue
+            for l in raw_links:
+                if not state.has_visited(l.url) and l.url not in unvisited_queue:
+                    unvisited_queue.append(l.url)
+
+            # Filter out already visited links for this step
             unvisited_links = [l for l in raw_links if not state.has_visited(l.url)]
             ranked_links = rank_links_bm25(
                 state.question,
