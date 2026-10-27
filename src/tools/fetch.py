@@ -1,15 +1,62 @@
 import logging
+import re
 import time
 from typing import Optional
-from urllib.parse import urlparse
+from urllib.parse import urljoin, urlparse
 import httpx
 from pydantic import BaseModel, Field
+from selectolax.lexbor import LexborHTMLParser as HTMLParser
 
 from src.config import settings
 from src.safety.url_guard import is_safe_url
 from src.safety.robots import default_robots_cache, default_rate_limiter
 
 logger = logging.getLogger(__name__)
+
+META_REFRESH_PATTERN = re.compile(
+    r'<meta\s+[^>]*http-equiv=["\']?refresh["\']?[^>]*content=["\']?\s*\d+\s*;\s*url=([^"\'>\s]+)["\']?',
+    re.IGNORECASE,
+)
+JS_REDIRECT_PATTERN = re.compile(
+    r'(?:window\.)?location(?:\.href|\.replace)\s*=\s*[\'"]([^\'"]+)[\'"]',
+    re.IGNORECASE,
+)
+
+
+def extract_html_redirect(html: str, current_url: str) -> Optional[str]:
+    """Detect and extract HTML meta-refresh or client-side redirect destination."""
+    if not html or not html.strip():
+        return None
+    try:
+        tree = HTMLParser(html)
+        # 1. Meta refresh tag
+        for meta in tree.css("meta"):
+            http_equiv = meta.attributes.get("http-equiv", "").lower()
+            if http_equiv == "refresh":
+                content = meta.attributes.get("content", "")
+                match = re.search(r"url\s*=\s*['\"]?([^'\"\s;>]+)", content, re.IGNORECASE)
+                if match:
+                    target = match.group(1).strip()
+                    return urljoin(current_url, target)
+
+        # 2. Regex fallback for non-standard meta tags
+        meta_match = META_REFRESH_PATTERN.search(html)
+        if meta_match:
+            return urljoin(current_url, meta_match.group(1).strip())
+
+        # 3. Simple inline JavaScript redirects
+        for script in tree.css("script"):
+            script_text = script.text()
+            if script_text and ("location.href" in script_text or "location.replace" in script_text):
+                js_match = JS_REDIRECT_PATTERN.search(script_text)
+                if js_match:
+                    return urljoin(current_url, js_match.group(1).strip())
+
+    except Exception as exc:
+        logger.debug("Failed parsing HTML redirect: %s", exc)
+
+    return None
+
 
 # Allowed MIME types for text extraction
 ALLOWED_CONTENT_TYPES = (
@@ -150,6 +197,49 @@ class PageFetcher:
 
                 # Decode text
                 text = response.text
+
+                # Check for HTML meta-refresh / client-side redirects (up to 3 hops)
+                current_fetch_url = final_url
+                current_html = text
+                html_redirect_count = 0
+                max_html_redirects = 3
+
+                while html_redirect_count < max_html_redirects:
+                    html_target = extract_html_redirect(current_html, current_fetch_url)
+                    if not html_target or html_target == current_fetch_url:
+                        break
+
+                    html_redirect_count += 1
+                    logger.info(
+                        "Following HTML redirect (%d/%d): %s -> %s",
+                        html_redirect_count,
+                        max_html_redirects,
+                        current_fetch_url,
+                        html_target,
+                    )
+
+                    if self.check_safety:
+                        target_safe, reason = is_safe_url(html_target)
+                        if not target_safe:
+                            logger.warning("SSRF block on HTML redirect target %s: %s", html_target, reason)
+                            break
+
+                    try:
+                        redirect_resp = await client.get(html_target)
+                        current_fetch_url = str(redirect_resp.url)
+                        target_content_type = redirect_resp.headers.get("content-type", "").lower()
+                        if not any(allowed in target_content_type for allowed in ALLOWED_CONTENT_TYPES):
+                            break
+                        current_html = redirect_resp.text
+                        final_url = current_fetch_url
+                        response = redirect_resp
+                        content_type = target_content_type
+                    except Exception as exc:
+                        logger.warning("Failed following HTML redirect to %s: %s", html_target, exc)
+                        break
+
+                text = current_html
+
                 return FetchResult(
                     url=url,
                     final_url=final_url,

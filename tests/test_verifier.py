@@ -37,6 +37,14 @@ def test_verify_evidence_in_page_tampered_or_missing():
     assert "Quote was not found" in msg
 
 
+def test_verify_evidence_in_page_invented_quote_rejected():
+    page = "Wikipedia is a free online encyclopedia, created and edited by volunteers around the world."
+    invented_quote = "Wikipedia was founded by Albert Einstein in 1905 on Mars."
+    valid, msg = verify_evidence_in_page(invented_quote, page)
+    assert valid is False
+    assert "Quote was not found in the stored page text" in msg
+
+
 def test_verify_evidence_empty():
     valid, msg = verify_evidence_in_page("", "Some text")
     assert valid is False

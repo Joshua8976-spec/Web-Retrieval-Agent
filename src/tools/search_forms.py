@@ -61,7 +61,7 @@ def extract_search_forms(html: str, current_url: str) -> List[DiscoveredSearchFo
                     continue
 
                 if inp_type == "hidden":
-                    hidden_fields[inp_name] = inp.attributes.get("value", "")
+                    hidden_fields[inp_name] = inp.attributes.get("value") or ""
                 elif inp_type in ("text", "search"):
                     text_candidates.append(inp_name)
                     if not placeholder:
@@ -70,6 +70,19 @@ def extract_search_forms(html: str, current_url: str) -> List[DiscoveredSearchFo
                     # High-confidence query parameter names
                     if inp_type == "search" or inp_name.lower() in ("q", "query", "search", "s", "k", "search_term", "keyword", "wd"):
                         query_param = inp_name
+
+            # Inspect selects for default / selected options (e.g. language selection)
+            selects = form.css("select")
+            for sel in selects:
+                sel_name = sel.attributes.get("name")
+                if not sel_name:
+                    continue
+                selected_opt = sel.css_first("option[selected]") or sel.css_first("option")
+                if selected_opt:
+                    val = selected_opt.attributes.get("value")
+                    if val is None:
+                        val = selected_opt.text(strip=True)
+                    hidden_fields[sel_name] = val or ""
 
             # If no high-confidence name found, but text candidate exists
             if not query_param and text_candidates:

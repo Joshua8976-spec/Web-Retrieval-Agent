@@ -6,15 +6,15 @@
     <title>Web Information Retrieval Agent | AMD AI League</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-base: #080c14;
-            --bg-surface: rgba(18, 24, 38, 0.7);
-            --bg-card: rgba(23, 31, 48, 0.8);
+            --bg-base: #060911;
+            --bg-surface: rgba(15, 22, 36, 0.75);
+            --bg-card: rgba(20, 28, 45, 0.85);
             --border-subtle: rgba(255, 255, 255, 0.08);
-            --border-glow: rgba(0, 229, 255, 0.25);
-            --text-primary: #f0f4f8;
+            --border-glow: rgba(0, 229, 255, 0.3);
+            --text-primary: #f1f5f9;
             --text-secondary: #94a3b8;
             --text-muted: #64748b;
             --accent-cyan: #00e5ff;
@@ -23,8 +23,8 @@
             --accent-amber: #f59e0b;
             --accent-rose: #f43f5e;
             --radius-sm: 8px;
-            --radius-md: 14px;
-            --radius-lg: 20px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
         }
 
         * {
@@ -37,61 +37,78 @@
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background-color: var(--bg-base);
             color: var(--text-primary);
-            min-height: 100vh;
+            height: 100vh;
             display: flex;
             flex-direction: column;
-            overflow-x: hidden;
+            overflow: hidden;
             background-image: 
-                radial-gradient(circle at 15% 20%, rgba(0, 229, 255, 0.07) 0%, transparent 40%),
-                radial-gradient(circle at 85% 65%, rgba(139, 92, 246, 0.08) 0%, transparent 45%);
+                radial-gradient(circle at 12% 15%, rgba(0, 229, 255, 0.06) 0%, transparent 40%),
+                radial-gradient(circle at 88% 75%, rgba(139, 92, 246, 0.07) 0%, transparent 45%);
             background-attachment: fixed;
         }
 
         /* Top Navigation Header */
         header {
             width: 100%;
-            padding: 1.25rem 2rem;
+            padding: 0.75rem 1.75rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
             border-bottom: 1px solid var(--border-subtle);
             backdrop-filter: blur(12px);
-            background: rgba(8, 12, 20, 0.75);
-            position: sticky;
-            top: 0;
+            background: rgba(6, 9, 17, 0.85);
+            flex-shrink: 0;
             z-index: 100;
+        }
+
+        .brand-group {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
 
         .brand {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            font-size: 1.15rem;
+            gap: 0.65rem;
+            font-size: 1.1rem;
             font-weight: 700;
             letter-spacing: -0.02em;
         }
 
         .brand-badge {
             background: linear-gradient(135deg, var(--accent-cyan), var(--accent-violet));
-            width: 32px;
-            height: 32px;
+            width: 30px;
+            height: 30px;
             border-radius: var(--radius-sm);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #000;
-            font-size: 1rem;
+            color: #030814;
+            font-size: 0.95rem;
             font-weight: 900;
-            box-shadow: 0 0 15px rgba(0, 229, 255, 0.3);
+            box-shadow: 0 0 12px rgba(0, 229, 255, 0.35);
+        }
+
+        .match-badge {
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 0.25rem 0.55rem;
+            border-radius: var(--radius-sm);
+            background: rgba(237, 28, 36, 0.15);
+            border: 1px solid rgba(237, 28, 36, 0.3);
+            color: #ff4d4f;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
         }
 
         .status-pill {
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             font-family: 'JetBrains Mono', monospace;
-            padding: 0.4rem 0.85rem;
+            padding: 0.35rem 0.75rem;
             background: rgba(16, 185, 129, 0.1);
             border: 1px solid rgba(16, 185, 129, 0.25);
             color: var(--accent-emerald);
@@ -99,8 +116,8 @@
         }
 
         .status-dot {
-            width: 8px;
-            height: 8px;
+            width: 7px;
+            height: 7px;
             background: var(--accent-emerald);
             border-radius: 50%;
             box-shadow: 0 0 8px var(--accent-emerald);
@@ -112,112 +129,138 @@
             50% { opacity: 0.4; transform: scale(0.85); }
         }
 
-        /* Main Container */
+        /* Main Dashboard Layout */
         main {
             flex: 1;
-            max-width: 1100px;
+            padding: 1rem 1.75rem;
+            max-width: 1600px;
             width: 100%;
-            margin: 2.5rem auto;
-            padding: 0 1.5rem;
+            margin: 0 auto;
             display: flex;
             flex-direction: column;
-            gap: 2rem;
+            overflow: hidden;
         }
 
-        .hero-section {
-            text-align: center;
-            margin-bottom: 0.5rem;
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 52% 48%;
+            gap: 1.25rem;
+            height: 100%;
+            min-height: 0; /* Prevents grid overflow */
         }
 
-        .hero-section h1 {
-            font-size: 2.6rem;
-            font-weight: 800;
-            letter-spacing: -0.03em;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, #ffffff 30%, #94a3b8 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        /* Left Column: Form (Top) + Results (Bottom) */
+        .col-left {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            height: 100%;
+            min-height: 0;
         }
 
-        .hero-section p {
-            color: var(--text-secondary);
-            font-size: 1.05rem;
-            max-width: 650px;
-            margin: 0 auto;
+        /* Right Column: Orchestrator Console */
+        .col-right {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            min-height: 0;
         }
 
-        /* Query Card */
         .glass-card {
             background: var(--bg-surface);
             border: 1px solid var(--border-subtle);
             border-radius: var(--radius-lg);
             backdrop-filter: blur(16px);
-            padding: 2rem;
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
-            transition: border-color 0.3s ease;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+            transition: border-color 0.25s ease;
+            display: flex;
+            flex-direction: column;
         }
 
         .glass-card:focus-within {
             border-color: var(--border-glow);
         }
 
+        /* 1. Form Card */
+        .form-card {
+            padding: 1.25rem 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .card-header-sm {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.85rem;
+        }
+
+        .card-header-sm h2 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+        }
+
         .form-grid {
             display: flex;
             flex-direction: column;
-            gap: 1.25rem;
+            gap: 0.85rem;
         }
 
         .field-group {
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
+            gap: 0.35rem;
         }
 
         label {
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             font-weight: 600;
             color: var(--text-secondary);
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.04em;
         }
 
         input[type="url"], input[type="text"] {
             width: 100%;
-            padding: 0.9rem 1.15rem;
-            background: rgba(10, 15, 26, 0.7);
+            padding: 0.75rem 1rem;
+            background: rgba(8, 12, 22, 0.75);
             border: 1px solid var(--border-subtle);
             border-radius: var(--radius-md);
             color: var(--text-primary);
-            font-size: 1rem;
+            font-size: 0.92rem;
             font-family: inherit;
             outline: none;
-            transition: all 0.25s ease;
+            transition: all 0.2s ease;
         }
 
         input[type="url"]:focus, input[type="text"]:focus {
             border-color: var(--accent-cyan);
-            background: rgba(10, 15, 26, 0.95);
-            box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.15);
+            background: rgba(8, 12, 22, 0.95);
+            box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.12);
         }
 
-        /* Example Chips */
         .examples-row {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.4rem;
             flex-wrap: wrap;
-            margin-top: -0.25rem;
+            margin-top: -0.1rem;
         }
 
         .example-chip {
-            font-size: 0.78rem;
-            padding: 0.3rem 0.65rem;
+            font-size: 0.72rem;
+            padding: 0.25rem 0.55rem;
             background: rgba(255, 255, 255, 0.04);
             border: 1px solid var(--border-subtle);
             border-radius: var(--radius-sm);
             color: var(--text-secondary);
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.18s ease;
         }
 
         .example-chip:hover {
@@ -227,120 +270,99 @@
             transform: translateY(-1px);
         }
 
-        /* Submit Button */
         .btn-submit {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.75rem;
-            padding: 1rem 2rem;
-            background: linear-gradient(135deg, #00d2ff, #0099ff);
+            gap: 0.5rem;
+            padding: 0.8rem 1.5rem;
+            background: linear-gradient(135deg, #00e5ff, #0088ff);
             color: #030814;
             border: none;
             border-radius: var(--radius-md);
-            font-size: 1.05rem;
+            font-size: 0.95rem;
             font-weight: 700;
             cursor: pointer;
-            transition: all 0.25s ease;
-            box-shadow: 0 4px 20px rgba(0, 210, 255, 0.25);
-            margin-top: 0.5rem;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 18px rgba(0, 229, 255, 0.25);
+            margin-top: 0.25rem;
         }
 
         .btn-submit:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 25px rgba(0, 210, 255, 0.4);
-            filter: brightness(1.1);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 22px rgba(0, 229, 255, 0.35);
+            filter: brightness(1.08);
         }
 
         .btn-submit:disabled {
-            opacity: 0.6;
+            opacity: 0.55;
             cursor: not-allowed;
             transform: none;
         }
 
-        /* Stream / Progress Console */
-        .console-container {
-            display: none;
-            flex-direction: column;
-            gap: 1rem;
+        /* 2. Results Card (Fills lower left) */
+        .result-card {
+            flex: 1;
+            padding: 1.25rem 1.5rem;
+            min-height: 0;
+            overflow-y: auto;
+            position: relative;
         }
 
-        .console-header {
+        .result-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            color: var(--text-muted);
+            padding: 1.5rem;
+            gap: 0.65rem;
+        }
+
+        .placeholder-icon {
+            font-size: 2.2rem;
+            opacity: 0.75;
+            filter: drop-shadow(0 0 10px rgba(0, 229, 255, 0.2));
+        }
+
+        .placeholder-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .placeholder-desc {
+            font-size: 0.82rem;
+            max-width: 380px;
+            line-height: 1.5;
+        }
+
+        .result-content {
+            display: none;
+            flex-direction: column;
+            gap: 0.9rem;
+            height: 100%;
+            animation: fadeIn 0.3s ease forwards;
+        }
+
+        .result-top-bar {
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
 
-        .console-header h3 {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--text-secondary);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .stream-box {
-            background: #050811;
-            border: 1px solid var(--border-subtle);
-            border-radius: var(--radius-md);
-            padding: 1.25rem;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
-            line-height: 1.6;
-            max-height: 280px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .log-entry {
-            display: flex;
-            align-items: flex-start;
-            gap: 0.75rem;
-            animation: fadeIn 0.2s ease forwards;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(3px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .log-tag {
-            padding: 0.15rem 0.45rem;
-            border-radius: 4px;
-            font-size: 0.72rem;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .tag-fetching { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
-        .tag-planning { background: rgba(168, 85, 247, 0.15); color: #c084fc; }
-        .tag-action { background: rgba(16, 185, 129, 0.15); color: #34d399; }
-        .tag-verifying { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
-        .tag-rejected { background: rgba(244, 63, 94, 0.15); color: #fb7185; }
-        .tag-done { background: rgba(16, 185, 129, 0.25); color: #10b981; }
-
-        /* Result Card */
-        .result-container {
-            display: none;
-            flex-direction: column;
-            gap: 1.25rem;
-            animation: fadeIn 0.4s ease forwards;
-        }
-
         .result-badge {
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
-            padding: 0.4rem 0.9rem;
+            gap: 0.45rem;
+            padding: 0.35rem 0.8rem;
             border-radius: 999px;
-            font-size: 0.82rem;
+            font-size: 0.78rem;
             font-weight: 700;
             letter-spacing: 0.04em;
             text-transform: uppercase;
-            width: fit-content;
         }
 
         .badge-found {
@@ -356,59 +378,64 @@
         }
 
         .answer-text {
-            font-size: 1.35rem;
+            font-size: 1.15rem;
             font-weight: 600;
             line-height: 1.45;
             color: #ffffff;
         }
 
         .evidence-quote-box {
-            background: rgba(0, 0, 0, 0.35);
-            border-left: 4px solid var(--accent-cyan);
+            background: rgba(0, 0, 0, 0.4);
+            border-left: 3px solid var(--accent-cyan);
             border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-            padding: 1.15rem 1.4rem;
-            margin: 0.5rem 0;
+            padding: 0.85rem 1.15rem;
             font-style: italic;
             color: #e2e8f0;
-            font-size: 1rem;
-            line-height: 1.6;
+            font-size: 0.88rem;
+            line-height: 1.55;
+            max-height: 140px;
+            overflow-y: auto;
         }
 
         .quote-label {
-            font-size: 0.72rem;
+            font-size: 0.68rem;
             font-family: 'JetBrains Mono', monospace;
             text-transform: uppercase;
             letter-spacing: 0.08em;
             color: var(--accent-cyan);
             font-style: normal;
-            margin-bottom: 0.4rem;
+            margin-bottom: 0.3rem;
             font-weight: 700;
         }
 
         .meta-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-top: 0.75rem;
-            padding-top: 1rem;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.65rem;
+            padding-top: 0.75rem;
             border-top: 1px solid var(--border-subtle);
+            margin-top: auto;
         }
 
         .meta-item {
             display: flex;
             flex-direction: column;
-            gap: 0.25rem;
+            gap: 0.2rem;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 0.45rem 0.65rem;
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(255, 255, 255, 0.04);
         }
 
         .meta-label {
-            font-size: 0.75rem;
+            font-size: 0.68rem;
             color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.04em;
         }
 
         .meta-value {
-            font-size: 0.95rem;
+            font-size: 0.85rem;
             font-weight: 600;
             color: var(--text-primary);
             overflow: hidden;
@@ -421,27 +448,157 @@
             text-decoration: none;
             display: inline-flex;
             align-items: center;
-            gap: 0.35rem;
+            gap: 0.3rem;
         }
 
         .source-link:hover {
             text-decoration: underline;
         }
 
-        footer {
-            text-align: center;
-            padding: 2rem;
+        /* 3. Orchestrator Console Card (Right side, full height) */
+        .console-card {
+            height: 100%;
+            padding: 1.25rem 1.5rem;
+            min-height: 0;
+        }
+
+        .console-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.85rem;
+            flex-shrink: 0;
+        }
+
+        .console-title-group {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+        }
+
+        .pulse-indicator {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-cyan);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent-cyan);
+        }
+
+        .console-header h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .console-tools {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .step-badge {
+            font-size: 0.72rem;
+            font-family: 'JetBrains Mono', monospace;
+            padding: 0.2rem 0.55rem;
+            background: rgba(139, 92, 246, 0.15);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            color: #c084fc;
+            border-radius: var(--radius-sm);
+        }
+
+        .timer-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
             color: var(--text-muted);
-            font-size: 0.85rem;
-            border-top: 1px solid var(--border-subtle);
+        }
+
+        .stream-box {
+            background: #040710;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            line-height: 1.6;
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.45rem;
+            min-height: 0;
+        }
+
+        .stream-idle-msg {
+            color: var(--text-muted);
+            font-style: italic;
+            font-size: 0.82rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+        }
+
+        .log-entry {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.65rem;
+            animation: fadeIn 0.15s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(2px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .log-tag {
+            padding: 0.12rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+
+        .tag-fetching { background: rgba(59, 130, 246, 0.18); color: #60a5fa; }
+        .tag-planning { background: rgba(168, 85, 247, 0.18); color: #c084fc; }
+        .tag-action { background: rgba(16, 185, 129, 0.18); color: #34d399; }
+        .tag-verifying { background: rgba(245, 158, 11, 0.18); color: #fbbf24; }
+        .tag-rejected { background: rgba(244, 63, 94, 0.18); color: #fb7185; }
+        .tag-done { background: rgba(16, 185, 129, 0.28); color: #10b981; }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 1080px) {
+            body {
+                height: auto;
+                overflow-y: auto;
+            }
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+            .col-right, .console-card {
+                height: 480px;
+            }
+            .result-card {
+                min-height: 260px;
+            }
+            .meta-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
     </style>
 </head>
 <body>
     <header>
-        <div class="brand">
-            <div class="brand-badge">⚡</div>
-            <span>Web Retrieval Agent</span>
+        <div class="brand-group">
+            <div class="brand">
+                <div class="brand-badge">⚡</div>
+                <span>Web Retrieval Agent</span>
+            </div>
+            <div class="match-badge">AMD AI League Match 4</div>
         </div>
         <div class="status-pill" id="agent-status-pill">
             <div class="status-dot"></div>
@@ -450,82 +607,105 @@
     </header>
 
     <main>
-        <div class="hero-section">
-            <h1>Autonomous Web Retrieval</h1>
-            <p>Navigates websites on its own to locate factual answers backed by exact verbatim proof.</p>
-        </div>
+        <div class="dashboard-grid">
+            <!-- LEFT COLUMN: Input Form (Top) + Verified Results (Bottom) -->
+            <div class="col-left">
+                <!-- 1. Retrieval Request Form -->
+                <div class="glass-card form-card">
+                    <div class="card-header-sm">
+                        <h2><span>🎯</span> Retrieval Request</h2>
+                    </div>
+                    <form id="retrieval-form" class="form-grid" onsubmit="event.preventDefault(); startRetrieval();">
+                        <div class="field-group">
+                            <label for="input-url">Starting Website URL</label>
+                            <input type="url" id="input-url" placeholder="https://www.wikipedia.org/" required value="https://www.wikipedia.org/">
+                        </div>
 
-        <!-- Query Form -->
-        <div class="glass-card">
-            <form id="retrieval-form" class="form-grid" onsubmit="event.preventDefault(); startRetrieval();">
-                <div class="field-group">
-                    <label for="input-url">Starting Website URL</label>
-                    <input type="url" id="input-url" placeholder="https://fastapi.tiangolo.com/" required value="https://fastapi.tiangolo.com/">
+                        <div class="field-group">
+                            <label for="input-question">Natural-Language Question</label>
+                            <input type="text" id="input-question" placeholder="Who was Mahatma Gandhi?" required value="Who was Mahatma Gandhi?">
+                        </div>
+
+                        <div class="examples-row">
+                            <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 600;">Examples:</span>
+                            <button type="button" class="example-chip" onclick="fillExample('https://www.wikipedia.org/', 'Who was Mahatma Gandhi?')">Wikipedia: Mahatma Gandhi</button>
+                            <button type="button" class="example-chip" onclick="fillExample('https://fastapi.tiangolo.com/', 'What framework is FastAPI based on for web routing?')">FastAPI Foundations</button>
+                            <button type="button" class="example-chip" onclick="fillExample('https://rocm.docs.amd.com/en/latest/', 'What is AMD ROCm according to the documentation overview?')">AMD ROCm Overview</button>
+                            <button type="button" class="example-chip" onclick="fillExample('https://pydantic.dev/', 'What language was Pydantic Core rewritten in?')">Pydantic Core</button>
+                            <button type="button" class="example-chip" onclick="fillExample('https://fastapi.tiangolo.com/', 'What is the secret 90% discount code for enterprise?')">Impossible Query</button>
+                        </div>
+
+                        <button type="submit" id="btn-submit" class="btn-submit">
+                            <span>Initiate Retrieval Run</span>
+                            <span id="btn-spinner" style="display: none;">⏳</span>
+                        </button>
+                    </form>
                 </div>
 
-                <div class="field-group">
-                    <label for="input-question">Natural-Language Question</label>
-                    <input type="text" id="input-question" placeholder="What framework is FastAPI based on for web routing?" required value="What framework is FastAPI based on for web routing?">
+                <!-- 2. Final Results Card -->
+                <div class="glass-card result-card" id="result-card">
+                    <!-- Placeholder state (visible before run) -->
+                    <div class="result-placeholder" id="result-placeholder">
+                        <div class="placeholder-icon">📋</div>
+                        <div class="placeholder-title">Verified Findings & Proof</div>
+                        <div class="placeholder-desc">When retrieval completes, the verified answer, exact verbatim evidence quote, and source link will appear here.</div>
+                    </div>
+
+                    <!-- Populated result state -->
+                    <div class="result-content" id="result-content">
+                        <div class="result-top-bar">
+                            <div id="result-badge-container"></div>
+                        </div>
+
+                        <div class="answer-text" id="result-answer"></div>
+
+                        <div class="evidence-quote-box" id="evidence-box">
+                            <div class="quote-label">Verified Verbatim Proof</div>
+                            <div id="result-quote"></div>
+                        </div>
+
+                        <div class="meta-grid">
+                            <div class="meta-item">
+                                <span class="meta-label">Source Document</span>
+                                <div class="meta-value" id="result-source">-</div>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-label">Pages Inspected</span>
+                                <span class="meta-value" id="result-pages">0</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-label">Steps Taken</span>
+                                <span class="meta-value" id="result-steps">0</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-label">Total Latency</span>
+                                <span class="meta-value" id="result-time">0.0s</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-
-                <div class="examples-row">
-                    <span style="font-size: 0.75rem; color: var(--text-muted);">Quick Examples:</span>
-                    <button type="button" class="example-chip" onclick="fillExample('https://fastapi.tiangolo.com/', 'What framework is FastAPI based on for web parts?')">FastAPI Foundations</button>
-                    <button type="button" class="example-chip" onclick="fillExample('https://rocm.docs.amd.com/en/latest/', 'What is AMD ROCm according to the documentation overview?')">AMD ROCm Overview</button>
-                    <button type="button" class="example-chip" onclick="fillExample('https://pydantic.dev/', 'What language was Pydantic Core rewritten in?')">Pydantic Core</button>
-                    <button type="button" class="example-chip" onclick="fillExample('https://fastapi.tiangolo.com/', 'What is the secret 90% discount code for enterprise?')">Impossible Query</button>
-                </div>
-
-                <button type="submit" id="btn-submit" class="btn-submit">
-                    <span>Initiate Retrieval Run</span>
-                    <span id="btn-spinner" style="display: none;">⏳</span>
-                </button>
-            </form>
-        </div>
-
-        <!-- Live Streaming Console -->
-        <div class="glass-card console-container" id="console-container">
-            <div class="console-header">
-                <h3>Live Orchestrator Progress</h3>
-                <span id="console-timer" style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text-muted);">0.0s</span>
             </div>
-            <div class="stream-box" id="stream-box"></div>
-        </div>
 
-        <!-- Final Results Card -->
-        <div class="glass-card result-container" id="result-container">
-            <div id="result-badge-container"></div>
-            <div class="answer-text" id="result-answer"></div>
-            
-            <div class="evidence-quote-box" id="evidence-box">
-                <div class="quote-label">Verified Verbatim Proof</div>
-                <div id="result-quote"></div>
-            </div>
-
-            <div class="meta-grid">
-                <div class="meta-item">
-                    <span class="meta-label">Source Document</span>
-                    <div class="meta-value" id="result-source"></div>
-                </div>
-                <div class="meta-item">
-                    <span class="meta-label">Pages Inspected</span>
-                    <span class="meta-value" id="result-pages">0</span>
-                </div>
-                <div class="meta-item">
-                    <span class="meta-label">Steps Taken</span>
-                    <span class="meta-value" id="result-steps">0</span>
-                </div>
-                <div class="meta-item">
-                    <span class="meta-label">Total Latency</span>
-                    <span class="meta-value" id="result-time">0.0s</span>
+            <!-- RIGHT COLUMN: 3. Live Orchestrator Progress (Full Height) -->
+            <div class="col-right">
+                <div class="glass-card console-card" id="console-container">
+                    <div class="console-header">
+                        <div class="console-title-group">
+                            <div class="pulse-indicator"></div>
+                            <h3>Live Orchestrator Progress</h3>
+                        </div>
+                        <div class="console-tools">
+                            <span class="step-badge" id="console-step-badge">IDLE</span>
+                            <span class="timer-badge" id="console-timer">0.0s</span>
+                        </div>
+                    </div>
+                    <div class="stream-box" id="stream-box">
+                        <div class="stream-idle-msg">Ready for run. Enter a target URL and question to launch autonomous site retrieval.</div>
+                    </div>
                 </div>
             </div>
         </div>
     </main>
-
-    <footer>
-        Prepared for AMD AI League — Match 4 (Intelligent Web Information Retrieval)
-    </footer>
 
     <script>
         let eventSource = null;
@@ -539,6 +719,10 @@
 
         function appendLog(tag, tagClass, text) {
             const streamBox = document.getElementById('stream-box');
+            // Remove idle message if present
+            const idleMsg = streamBox.querySelector('.stream-idle-msg');
+            if (idleMsg) idleMsg.remove();
+
             const entry = document.createElement('div');
             entry.className = 'log-entry';
             entry.innerHTML = `<span class="log-tag ${tagClass}">${tag}</span> <span>${text}</span>`;
@@ -557,17 +741,26 @@
 
             const submitBtn = document.getElementById('btn-submit');
             const spinner = document.getElementById('btn-spinner');
-            const consoleBox = document.getElementById('console-container');
             const streamBox = document.getElementById('stream-box');
-            const resultBox = document.getElementById('result-container');
+            const resultPlaceholder = document.getElementById('result-placeholder');
+            const resultContent = document.getElementById('result-content');
             const statusText = document.getElementById('agent-status-text');
+            const stepBadge = document.getElementById('console-step-badge');
 
             submitBtn.disabled = true;
             spinner.style.display = 'inline';
-            consoleBox.style.display = 'flex';
-            resultBox.style.display = 'none';
             streamBox.innerHTML = '';
             statusText.textContent = 'Navigating...';
+            stepBadge.textContent = 'STEP 1';
+
+            // Reset results card to active progress view
+            resultPlaceholder.style.display = 'flex';
+            resultPlaceholder.innerHTML = `
+                <div class="placeholder-icon" style="animation: pulse 1.5s infinite;">⚡</div>
+                <div class="placeholder-title">Orchestrator Exploring Site...</div>
+                <div class="placeholder-desc">Fetching pages, discovering navigation forms, and evaluating content chunks in real time.</div>
+            `;
+            resultContent.style.display = 'none';
 
             startTime = performance.now();
             timerInterval = setInterval(() => {
@@ -588,11 +781,13 @@
 
             eventSource.addEventListener('fetching', (e) => {
                 const data = JSON.parse(e.data);
+                stepBadge.textContent = `STEP ${data.step}`;
                 appendLog('FETCH', 'tag-fetching', `[Step ${data.step}] Fetching ${data.url}`);
             });
 
             eventSource.addEventListener('planning', (e) => {
                 const data = JSON.parse(e.data);
+                stepBadge.textContent = `STEP ${data.step}`;
                 appendLog('THINK', 'tag-planning', `Evaluating clean content & top links on step ${data.step}`);
             });
 
@@ -603,6 +798,8 @@
                     appendLog('ACTION', 'tag-action', `Decision: Open Link #${act.link_number} (${act.reasoning || 'relevant'})`);
                 } else if (act.action === 'open_url') {
                     appendLog('ACTION', 'tag-action', `Decision: Navigate to ${act.url}`);
+                } else if (act.action === 'search_site') {
+                    appendLog('SEARCH', 'tag-action', `Decision: Site search for "${act.query}"`);
                 } else if (act.action === 'answer') {
                     appendLog('ANSWER', 'tag-verifying', `Proposing answer: "${act.answer}"`);
                 } else if (act.action === 'give_up') {
@@ -623,6 +820,7 @@
             eventSource.addEventListener('done', (e) => {
                 const data = JSON.parse(e.data);
                 const res = data.result;
+                stepBadge.textContent = 'COMPLETE';
                 appendLog('FINISH', 'tag-done', `Run concluded in ${res.steps} steps (${res.elapsed_seconds}s).`);
                 displayResult(res);
                 finishRun();
@@ -630,6 +828,7 @@
 
             eventSource.addEventListener('error', (e) => {
                 appendLog('ERROR', 'tag-rejected', 'Connection lost or stream error.');
+                stepBadge.textContent = 'ERROR';
                 finishRun();
             });
         }
@@ -643,7 +842,8 @@
         }
 
         function displayResult(res) {
-            const container = document.getElementById('result-container');
+            const placeholder = document.getElementById('result-placeholder');
+            const content = document.getElementById('result-content');
             const badgeContainer = document.getElementById('result-badge-container');
             const answerEl = document.getElementById('result-answer');
             const evidenceBox = document.getElementById('evidence-box');
@@ -667,8 +867,8 @@
                 sourceEl.textContent = res.pages_visited && res.pages_visited.length > 0 ? res.pages_visited[0] : 'None';
             }
 
-            container.style.display = 'flex';
-            container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            placeholder.style.display = 'none';
+            content.style.display = 'flex';
         }
     </script>
 </body>

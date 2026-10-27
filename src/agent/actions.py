@@ -19,9 +19,9 @@ class OpenLinkAction(BaseModel):
 
 
 class OpenUrlAction(BaseModel):
-    """Open a specific internal URL on the same site (e.g., sitemap, docs, search)."""
+    """Open a specific URL that was discovered on the current or previously visited pages."""
     action: Literal[ActionType.OPEN_URL] = ActionType.OPEN_URL
-    url: str = Field(description="The internal URL on the same site to navigate to.")
+    url: str = Field(description="A discovered internal URL on the same site to navigate to. Never guess or invent speculative URLs; use search_site for search.")
     reasoning: Optional[str] = Field(default=None, description="Brief explanation of why this URL was chosen.")
 
 

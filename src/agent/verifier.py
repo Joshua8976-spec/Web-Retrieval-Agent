@@ -20,6 +20,23 @@ def strip_markdown(text: str) -> str:
     return no_emphasis
 
 
+def format_evidence_quote(quote: str) -> str:
+    """Trim evidence quotes to end at a sentence boundary and strip citation markers like [c] or [2]."""
+    if not quote or not quote.strip():
+        return ""
+
+    # Strip citation markers like [1], [c], [2], [note 1]
+    cleaned = re.sub(r"\[(?:[0-9]+|[a-z]|note\s*\d+)\]", "", quote)
+    cleaned = normalize_whitespace(cleaned)
+
+    # Trim to nearest complete sentence boundary (. ! ?) if ending mid-sentence
+    last_punct = max(cleaned.rfind("."), cleaned.rfind("!"), cleaned.rfind("?"))
+    if last_punct != -1 and last_punct >= 20 and last_punct < len(cleaned) - 1:
+        cleaned = cleaned[: last_punct + 1].strip()
+
+    return cleaned
+
+
 def verify_evidence_in_page(evidence_quote: str, page_text: str) -> Tuple[bool, str]:
     """Verify in deterministic code that evidence_quote appears verbatim in the page text.
     

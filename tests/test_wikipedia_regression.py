@@ -70,6 +70,47 @@ def test_wikipedia_portal_search_form(wikipedia_portal_html):
     assert form.query_param == "search"
     assert form.hidden_fields.get("family") == "wikipedia"
 
+    assert form.hidden_fields.get("language") == "en"
+
     query_url = form.build_query_url("Mahatma Gandhi")
     assert "search=Mahatma+Gandhi" in query_url or "search=Mahatma%20Gandhi" in query_url
     assert "family=wikipedia" in query_url
+    assert "language=en" in query_url
+
+
+def test_html_meta_refresh_redirect_extraction():
+    from src.tools.fetch import extract_html_redirect
+
+    html_meta = """
+    <html>
+      <head>
+        <meta http-equiv="refresh" content="0; url=https://en.wikipedia.org/wiki/Mahatma_Gandhi">
+      </head>
+      <body>Redirecting...</body>
+    </html>
+    """
+    dest = extract_html_redirect(html_meta, "https://www.wikipedia.org/")
+    assert dest == "https://en.wikipedia.org/wiki/Mahatma_Gandhi"
+
+    # Relative path in meta refresh
+    html_rel = '<meta http-equiv="refresh" content="1;url=/wiki/Special:Search?search=test">'
+    dest_rel = extract_html_redirect(html_rel, "https://en.wikipedia.org/portal")
+    assert dest_rel == "https://en.wikipedia.org/wiki/Special:Search?search=test"
+
+
+def test_format_evidence_quote_strips_citations_and_trims_sentence():
+    from src.agent.verifier import format_evidence_quote
+
+    raw_quote = (
+        "Mohandas Karamchand Gandhi[c] (2 October 1869 \u2013 30 January 1948) was an Indian lawyer,[2] "
+        "anti-colonial nationalist,[3] and political ethicist[4] who employed nonviolent resistance. Additional trailing unneeded fragment"
+    )
+
+    cleaned = format_evidence_quote(raw_quote)
+    # Citations must be stripped
+    assert "[c]" not in cleaned
+    assert "[2]" not in cleaned
+    assert "[3]" not in cleaned
+    assert "[4]" not in cleaned
+    # Must end at sentence boundary
+    assert cleaned.endswith("who employed nonviolent resistance.")

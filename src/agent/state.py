@@ -29,6 +29,7 @@ class AgentState(BaseModel):
     current_url: str = ""
     visited_urls: Set[str] = Field(default_factory=set)
     attempted_urls: Set[str] = Field(default_factory=set)
+    discovered_urls: Set[str] = Field(default_factory=set)
     page_history: List[str] = Field(default_factory=list)
     page_contents: Dict[str, str] = Field(default_factory=dict)
     step_count: int = 0
@@ -42,6 +43,8 @@ class AgentState(BaseModel):
             self.target_domain = urlparse(self.start_url).netloc.lower()
         if not self.current_url:
             self.current_url = self.start_url
+        if self.start_url:
+            self.discovered_urls.add(self.start_url)
 
     def elapsed_seconds(self) -> float:
         """Seconds elapsed since agent execution started."""
@@ -94,12 +97,15 @@ class AgentState(BaseModel):
         source_url: str,
     ) -> AgentResult:
         """Mark run complete with a verified answer."""
+        from src.agent.verifier import format_evidence_quote
+
+        cleaned_quote = format_evidence_quote(evidence_quote) or evidence_quote
         self.is_complete = True
         self.final_output = AgentResult(
             found=True,
             status="found",
             answer=answer,
-            evidence_quote=evidence_quote,
+            evidence_quote=cleaned_quote,
             source_url=source_url,
             pages_visited=list(self.page_history),
             steps=self.step_count,

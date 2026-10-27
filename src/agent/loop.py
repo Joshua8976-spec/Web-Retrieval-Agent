@@ -199,8 +199,11 @@ class AgentOrchestrator:
                     same_domain_only=not settings.allow_external_domains,
                 )
                 for l in raw_links:
+                    state.discovered_urls.add(l.url)
                     if not state.has_visited(l.url) and l.url not in unvisited_queue:
                         unvisited_queue.append(l.url)
+                for f in current_search_forms:
+                    state.discovered_urls.add(f.action)
             else:
                 raw_links = []
 
@@ -391,22 +394,7 @@ class AgentOrchestrator:
 
             elif isinstance(action, OpenUrlAction):
                 normalized = normalize_url(action.url, resolved_url)
-                if normalized and is_same_domain(normalized, state.start_url):
-                    if not state.has_visited(normalized):
-                        state.current_url = normalized
-                    else:
-                        fallback = next((l.url for l in ranked_links if not state.has_visited(l.url)), None)
-                        if not fallback and unvisited_queue:
-                            fallback = next((u for u in unvisited_queue if not state.has_visited(u)), None)
-                        if fallback:
-                            state.current_url = fallback
-                            last_error = f"Requested URL '{normalized}' was already visited."
-                        else:
-                            return state.finish_not_found(
-                                explanation="Requested URL was already visited and no more links remain.",
-                                status="not_found_on_site",
-                            )
-                else:
+                if not normalized or not is_same_domain(normalized, state.start_url):
                     logger.warning("Model requested external or invalid URL: %s. Confined to domain.", action.url)
                     last_error = f"URL '{action.url}' is outside the allowed site domain."
                     fallback = next((l.url for l in ranked_links if not state.has_visited(l.url)), None)
@@ -417,6 +405,38 @@ class AgentOrchestrator:
                     else:
                         return state.finish_not_found(
                             explanation="Cannot navigate outside the starting domain.",
+                            status="not_found_on_site",
+                        )
+                elif normalized not in state.discovered_urls and action.url not in state.discovered_urls:
+                    # Model invented an unobserved speculative URL (e.g. /search?q=...)
+                    logger.warning("Model invented undiscovered URL: %s. Rejecting speculative guess.", action.url)
+                    last_error = (
+                        f"URL '{action.url}' was not discovered on the page. "
+                        f"Do not guess hypothetical URLs. To search the site, use 'search_site'. "
+                        f"To navigate, choose an existing link from <available_links>."
+                    )
+                    fallback = next((l.url for l in ranked_links if not state.has_visited(l.url)), None)
+                    if not fallback and unvisited_queue:
+                        fallback = next((u for u in unvisited_queue if not state.has_visited(u)), None)
+                    if fallback:
+                        state.current_url = fallback
+                    else:
+                        return state.finish_not_found(
+                            explanation=f"Invented URL '{action.url}' does not exist on the page and no alternative links remain.",
+                            status="not_found_on_site",
+                        )
+                elif not state.has_visited(normalized):
+                    state.current_url = normalized
+                else:
+                    fallback = next((l.url for l in ranked_links if not state.has_visited(l.url)), None)
+                    if not fallback and unvisited_queue:
+                        fallback = next((u for u in unvisited_queue if not state.has_visited(u)), None)
+                    if fallback:
+                        state.current_url = fallback
+                        last_error = f"Requested URL '{normalized}' was already visited."
+                    else:
+                        return state.finish_not_found(
+                            explanation="Requested URL was already visited and no more links remain.",
                             status="not_found_on_site",
                         )
 

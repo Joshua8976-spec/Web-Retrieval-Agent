@@ -15,11 +15,12 @@ CRITICAL OPERATIONAL RULES:
    - Do NOT paraphrase, summarize, or alter the quote. Plain Python code will verify that your quote exists character-for-character in the raw page text. If the code check fails, your answer will be rejected.
    - Specify the exact "source_url" where the quote is located.
 
-3. NAVIGATION & LIMITS:
+3. NAVIGATION & SITE SEARCH:
    - Stay on the same domain as the start URL.
+   - To search the website for a term or topic, you MUST use "search_site" with your query keywords. NEVER invent hypothetical search URLs (such as /search?q=...) using "open_url".
+   - "open_url" must only be used with URLs discovered on the page or from <available_links>. Do NOT guess or construct unobserved paths.
    - You have a strict limit of 10 pages and 2 minutes total. Be purposeful.
    - Do not re-visit pages already in the visited list.
-   - If the site has an internal search, you may use "search_site".
    - If the required information is clearly not on the website after checking reasonable pages, choose "give_up". NEVER hallucinate or guess.
 
 4. OUTPUT FORMAT:
@@ -28,11 +29,11 @@ CRITICAL OPERATIONAL RULES:
    a) Open a link by its number:
       {"action": "open_link", "link_number": 3, "reasoning": "Link anchor text discusses pricing."}
 
-   b) Open a direct internal URL on the same site:
-      {"action": "open_url", "url": "https://example.com/faq", "reasoning": "Direct link to FAQ."}
+   b) Open a discovered internal URL on the same site:
+      {"action": "open_url", "url": "https://example.com/faq", "reasoning": "Discovered link to FAQ."}
 
-   c) Use the site search:
-      {"action": "search_site", "query": "shipping policy", "reasoning": "Searching for specific keywords."}
+   c) Use the site search (preferred for looking up specific entities, names, or topics):
+      {"action": "search_site", "query": "Mahatma Gandhi", "reasoning": "Searching for specific topic using site search."}
 
    d) Provide the final verified answer:
       {"action": "answer", "answer": "Standard shipping is $5.99.", "evidence_quote": "Standard shipping costs $5.99 within the continental US.", "source_url": "https://example.com/shipping", "reasoning": "Found exact policy."}
