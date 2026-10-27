@@ -23,6 +23,7 @@ class TaskOutputItem(BaseModel):
     """Output result matching Match 4 format."""
     id: Optional[str] = None
     found: bool
+    status: str = "not_found_on_site"
     answer: Optional[str] = None
     evidence_quote: Optional[str] = None
     source_url: Optional[str] = None
@@ -69,6 +70,7 @@ async def run_task(orchestrator: AgentOrchestrator, task: TaskItem) -> TaskOutpu
     return TaskOutputItem(
         id=task.id,
         found=res.found,
+        status=res.status,
         answer=res.answer,
         evidence_quote=res.evidence_quote,
         source_url=res.source_url,

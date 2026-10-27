@@ -13,11 +13,19 @@ def normalize_whitespace(text: str) -> str:
     return re.sub(r"\s+", " ", text).strip()
 
 
+def strip_markdown(text: str) -> str:
+    """Strip markdown formatting (links, bold, italics, code) to extract clean visible text."""
+    no_links = re.sub(r"\[([^\]]+)\]\([^\)]+\)", r"\1", text)
+    no_emphasis = re.sub(r"[*_]{1,3}([^*_]+)[*_]{1,3}", r"\1", no_links)
+    return no_emphasis
+
+
 def verify_evidence_in_page(evidence_quote: str, page_text: str) -> Tuple[bool, str]:
     """Verify in deterministic code that evidence_quote appears verbatim in the page text.
     
-    Checks both direct substring and whitespace-normalized substring to handle
-    HTML layout spacing or line wraps while enforcing exact word-for-word accuracy.
+    Checks direct substring, whitespace-normalized substring, and markdown-stripped
+    substring to handle HTML layout spacing or markdown link markup while enforcing
+    exact word-for-word accuracy.
     """
     if not evidence_quote or not evidence_quote.strip():
         return False, "Evidence quote is empty."
@@ -37,6 +45,12 @@ def verify_evidence_in_page(evidence_quote: str, page_text: str) -> Tuple[bool, 
 
     if norm_quote in norm_page:
         return True, "Whitespace-normalized verbatim match verified."
+
+    # 3. Markdown-stripped check (handles markdown link syntax from conversion)
+    stripped_page = normalize_whitespace(strip_markdown(page_text)).lower()
+    stripped_quote = normalize_whitespace(strip_markdown(quote_raw)).lower()
+    if stripped_quote in stripped_page:
+        return True, "Markdown-normalized verbatim match verified."
 
     return False, f"Quote was not found in the stored page text: '{quote_raw[:80]}...'"
 

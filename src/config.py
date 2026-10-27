@@ -31,8 +31,9 @@ class Settings(BaseSettings):
     chunk_overlap: int = Field(default=150, alias="CHUNK_OVERLAP")
 
     # Safety & Fetch Settings
+    contact_email: str = Field(default="agent@example.com", alias="CONTACT_EMAIL")
     user_agent: str = Field(
-        default="WebRetrievalAgent/1.0 (+https://github.com/amd-ai-league)",
+        default="WebRetrievalBot/1.0 (+https://github.com/amd-ai-league; agent@example.com)",
         alias="USER_AGENT",
     )
     max_page_size_bytes: int = Field(default=5_242_880, alias="MAX_PAGE_SIZE_BYTES")  # 5MB

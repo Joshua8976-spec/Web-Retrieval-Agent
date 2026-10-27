@@ -53,20 +53,30 @@ def build_step_prompt(
     page_history: List[str],
     step_number: int,
     max_steps: int = 10,
+    search_forms_text: Optional[str] = None,
+    last_error: Optional[str] = None,
 ) -> str:
-    """Construct the step prompt providing context, untrusted content delimiters, and candidate links."""
+    """Construct the step prompt providing context, untrusted content delimiters, candidate links, and search mechanisms."""
     links_text = format_links_for_prompt(ranked_links)
 
     history_formatted = "\n".join(f"- {url}" for url in page_history) if page_history else "None (starting step)"
 
     content_preview = page_text.strip() if page_text.strip() else "(Empty or non-text page)"
 
+    error_section = ""
+    if last_error:
+        error_section = f"""\n=== PREVIOUS ACTION OBSERVATION (ERROR) ===\n{last_error}\nPlease adjust your plan and choose an alternative action or link.\n"""
+
+    search_section = ""
+    if search_forms_text:
+        search_section = f"""\n=== DISCOVERED SITE SEARCH MECHANISMS ===\n<site_search>\n{search_forms_text}\n</site_search>\n(You may use 'search_site' with a query; it will use these validated search endpoints.)\n"""
+
     return f"""=== RETRIEVAL TASK ===
 Target Question: {question}
 Start URL: {start_url}
 Current URL: {current_url}
 Step: {step_number} of {max_steps}
-
+{error_section}
 === PAGES ALREADY VISITED ===
 {history_formatted}
 
@@ -74,7 +84,7 @@ Step: {step_number} of {max_steps}
 <page_content url="{current_url}">
 {content_preview}
 </page_content>
-
+{search_section}
 === TOP RELEVANT LINKS ON THIS PAGE ===
 <available_links>
 {links_text}
@@ -83,7 +93,7 @@ Step: {step_number} of {max_steps}
 === INSTRUCTIONS ===
 Examine the current page content.
 - If the current page contains the answer, output the "answer" action with a verbatim word-for-word quote from the text.
-- If not, pick the most promising link from <available_links> using "open_link", or navigate using "open_url" or "search_site".
+- If not, pick the most promising link from <available_links> using "open_link", or use "search_site" if site search is available, or navigate using "open_url".
 - If you have exhausted all relevant links and the answer is not on the site, output "give_up".
 
 Output strictly your single JSON action:"""

@@ -10,6 +10,7 @@ class AgentResult(BaseModel):
     """Final output schema for the retrieval agent."""
 
     found: bool
+    status: str = Field(default="not_found_on_site", description="Outcome status: found, not_found_on_site, or access_error.")
     answer: Optional[str] = None
     evidence_quote: Optional[str] = None
     source_url: Optional[str] = None
@@ -27,6 +28,7 @@ class AgentState(BaseModel):
     target_domain: str = ""
     current_url: str = ""
     visited_urls: Set[str] = Field(default_factory=set)
+    attempted_urls: Set[str] = Field(default_factory=set)
     page_history: List[str] = Field(default_factory=list)
     page_contents: Dict[str, str] = Field(default_factory=dict)
     step_count: int = 0
@@ -56,18 +58,26 @@ class AgentState(BaseModel):
         return False, ""
 
     def has_visited(self, url: str) -> bool:
-        """Check if a normalized URL has already been visited."""
-        return url in self.visited_urls
+        """Check if a URL has already been visited or attempted (prevents repeated fetches)."""
+        return url in self.visited_urls or url in self.attempted_urls
+
+    def record_attempt(self, url: str):
+        """Mark URL as attempted to guarantee no repeated fetches of the same URL."""
+        self.attempted_urls.add(url)
 
     def record_visit(self, url: str, clean_text: str):
         """Record page visit and cache extracted text."""
         self.visited_urls.add(url)
-        self.page_history.append(url)
+        self.attempted_urls.add(url)
+        if url not in self.page_history:
+            self.page_history.append(url)
         self.page_contents[url] = clean_text
         self.step_count += 1
 
-    def can_retry_fetch(self, url: str) -> bool:
-        """Check if a URL can be retried (maximum 3 retries)."""
+    def can_retry_fetch(self, url: str, status_code: Optional[int] = None) -> bool:
+        """Check if a URL can be retried (never retry 404s or client errors)."""
+        if status_code in (404, 400, 401, 403, 410):
+            return False
         retries = self.fetch_retries.get(url, 0)
         return retries < settings.agent_max_retries
 
@@ -87,6 +97,7 @@ class AgentState(BaseModel):
         self.is_complete = True
         self.final_output = AgentResult(
             found=True,
+            status="found",
             answer=answer,
             evidence_quote=evidence_quote,
             source_url=source_url,
@@ -96,11 +107,16 @@ class AgentState(BaseModel):
         )
         return self.final_output
 
-    def finish_not_found(self, explanation: str) -> AgentResult:
-        """Mark run complete when the information is not on the site or limits are reached."""
+    def finish_not_found(
+        self,
+        explanation: str,
+        status: str = "not_found_on_site",
+    ) -> AgentResult:
+        """Mark run complete when the information is not on the site, limits are reached, or access error occurred."""
         self.is_complete = True
         self.final_output = AgentResult(
             found=False,
+            status=status,
             answer=None,
             evidence_quote=None,
             source_url=None,

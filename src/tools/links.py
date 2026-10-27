@@ -32,6 +32,28 @@ class ExtractedLink(BaseModel):
     score: float = 0.0
 
 
+import tldextract
+
+_extractor = tldextract.TLDExtract(cache_dir=None)
+
+
+def get_registered_domain(url_or_netloc: str) -> str:
+    """Return the eTLD+1 (registered domain) for a URL or netloc."""
+    if not url_or_netloc:
+        return ""
+    if "://" not in url_or_netloc:
+        url_or_netloc = f"http://{url_or_netloc}"
+    try:
+        ext = _extractor(url_or_netloc)
+        reg_domain = getattr(ext, "top_domain_under_public_suffix", None) or ext.registered_domain
+        if reg_domain:
+            return reg_domain.lower()
+        parsed = urlparse(url_or_netloc)
+        return parsed.netloc.lower().split(":")[0]
+    except Exception:
+        return ""
+
+
 def normalize_url(url: str, base_url: str) -> Optional[str]:
     """Resolve relative URLs, strip fragments and tracking query params, and enforce http/https."""
     if not url or not url.strip():
@@ -64,7 +86,7 @@ def normalize_url(url: str, base_url: str) -> Optional[str]:
     }
     new_query = urlencode(clean_params, doseq=True)
 
-    # Reconstruct URL without fragment
+    # Reconstruct URL without fragment (preserving path trailing slash)
     normalized = urlunparse((
         parsed.scheme,
         parsed.netloc.lower(),
@@ -74,23 +96,24 @@ def normalize_url(url: str, base_url: str) -> Optional[str]:
         "",  # No fragment
     ))
 
-    # Strip trailing slash if not root
-    if normalized.endswith("/") and parsed.path != "/" and parsed.path != "":
-        normalized = normalized[:-1]
-
     return normalized
 
 
 def is_same_domain(url: str, base_url: str) -> bool:
-    """Check if target URL belongs to the same domain (including subdomains or exact domain)."""
+    """Check if target URL belongs to the same registered domain (eTLD+1).
+
+    Allows subdomains like en.wikipedia.org and www.wikipedia.org to be treated
+    as the same site.
+    """
     try:
+        target_reg = get_registered_domain(url)
+        base_reg = get_registered_domain(base_url)
+        if target_reg and base_reg:
+            return target_reg == base_reg
+
         target_netloc = urlparse(url).netloc.lower().split(":")[0]
         base_netloc = urlparse(base_url).netloc.lower().split(":")[0]
-
-        if target_netloc == base_netloc:
-            return True
-        # Check subdomains (e.g. docs.example.com vs example.com)
-        if target_netloc.endswith("." + base_netloc):
+        if target_netloc == base_netloc or target_netloc.endswith("." + base_netloc):
             return True
         return False
     except Exception:
