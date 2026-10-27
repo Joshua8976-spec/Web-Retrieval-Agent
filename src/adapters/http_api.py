@@ -127,6 +127,20 @@ async def retrieve_info_stream(
     )
 
 
+@app.get("/api/benchmark/questions")
+async def get_benchmark_questions():
+    """Return default benchmark questions from eval/questions.jsonl."""
+    questions_file = Path(__file__).resolve().parent.parent.parent / "eval" / "questions.jsonl"
+    if not questions_file.exists():
+        return []
+    items = []
+    for line in questions_file.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if line:
+            items.append(json.loads(line))
+    return items
+
+
 # Serve UI if directory exists
 if UI_DIR.exists():
     app.mount("/static", StaticFiles(directory=str(UI_DIR)), name="static")

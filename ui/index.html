@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web Information Retrieval Agent | AMD AI League</title>
+    <title>Web Information Retrieval Agent | AMD AI League Match 4</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-base: #060911;
-            --bg-surface: rgba(15, 22, 36, 0.75);
-            --bg-card: rgba(20, 28, 45, 0.85);
+            --bg-surface: rgba(14, 21, 37, 0.75);
+            --bg-card: rgba(19, 27, 46, 0.85);
             --border-subtle: rgba(255, 255, 255, 0.08);
             --border-glow: rgba(0, 229, 255, 0.3);
             --text-primary: #f1f5f9;
@@ -22,6 +22,7 @@
             --accent-emerald: #10b981;
             --accent-amber: #f59e0b;
             --accent-rose: #f43f5e;
+            --accent-amd: #ed1c24;
             --radius-sm: 8px;
             --radius-md: 12px;
             --radius-lg: 16px;
@@ -42,21 +43,21 @@
             flex-direction: column;
             overflow: hidden;
             background-image: 
-                radial-gradient(circle at 12% 15%, rgba(0, 229, 255, 0.06) 0%, transparent 40%),
-                radial-gradient(circle at 88% 75%, rgba(139, 92, 246, 0.07) 0%, transparent 45%);
+                radial-gradient(circle at 10% 12%, rgba(0, 229, 255, 0.06) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.07) 0%, transparent 45%);
             background-attachment: fixed;
         }
 
         /* Top Navigation Header */
         header {
             width: 100%;
-            padding: 0.75rem 1.75rem;
+            padding: 0.65rem 1.75rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
             border-bottom: 1px solid var(--border-subtle);
             backdrop-filter: blur(12px);
-            background: rgba(6, 9, 17, 0.85);
+            background: rgba(6, 9, 17, 0.9);
             flex-shrink: 0;
             z-index: 100;
         }
@@ -64,48 +65,121 @@
         .brand-group {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 0.85rem;
         }
 
         .brand {
             display: flex;
             align-items: center;
             gap: 0.65rem;
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             font-weight: 700;
             letter-spacing: -0.02em;
         }
 
         .brand-badge {
             background: linear-gradient(135deg, var(--accent-cyan), var(--accent-violet));
-            width: 30px;
-            height: 30px;
+            width: 28px;
+            height: 28px;
             border-radius: var(--radius-sm);
             display: flex;
             align-items: center;
             justify-content: center;
             color: #030814;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: 900;
             box-shadow: 0 0 12px rgba(0, 229, 255, 0.35);
         }
 
         .match-badge {
-            font-size: 0.72rem;
+            font-size: 0.7rem;
             font-weight: 700;
-            padding: 0.25rem 0.55rem;
+            padding: 0.22rem 0.55rem;
             border-radius: var(--radius-sm);
             background: rgba(237, 28, 36, 0.15);
-            border: 1px solid rgba(237, 28, 36, 0.3);
+            border: 1px solid rgba(237, 28, 36, 0.35);
             color: #ff4d4f;
             letter-spacing: 0.03em;
             text-transform: uppercase;
         }
 
-        .status-pill {
+        /* Navigation Tab Switcher */
+        .tab-nav {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            background: rgba(14, 21, 37, 0.8);
+            padding: 0.25rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            padding: 0.45rem 0.95rem;
+            font-size: 0.82rem;
+            font-weight: 600;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, rgba(0, 229, 255, 0.15), rgba(139, 92, 246, 0.15));
+            border: 1px solid rgba(0, 229, 255, 0.35);
+            color: #ffffff;
+            box-shadow: 0 0 10px rgba(0, 229, 255, 0.15);
+        }
+
+        /* AMD ROCm Hardware Telemetry Chip */
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .rocm-chip {
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            font-size: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            padding: 0.35rem 0.75rem;
+            background: rgba(237, 28, 36, 0.08);
+            border: 1px solid rgba(237, 28, 36, 0.25);
+            color: #ff7875;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .rocm-chip:hover {
+            background: rgba(237, 28, 36, 0.15);
+            border-color: rgba(237, 28, 36, 0.45);
+        }
+
+        .rocm-dot {
+            width: 7px;
+            height: 7px;
+            background: #ff4d4f;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #ff4d4f;
+        }
+
+        .status-pill {
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
             font-size: 0.78rem;
             font-family: 'JetBrains Mono', monospace;
             padding: 0.35rem 0.75rem;
@@ -129,10 +203,10 @@
             50% { opacity: 0.4; transform: scale(0.85); }
         }
 
-        /* Main Dashboard Layout */
+        /* Main Workspace Container */
         main {
             flex: 1;
-            padding: 1rem 1.75rem;
+            padding: 0.85rem 1.75rem;
             max-width: 1600px;
             width: 100%;
             margin: 0 auto;
@@ -141,24 +215,36 @@
             overflow: hidden;
         }
 
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 52% 48%;
-            gap: 1.25rem;
-            height: 100%;
-            min-height: 0; /* Prevents grid overflow */
-        }
-
-        /* Left Column: Form (Top) + Results (Bottom) */
-        .col-left {
-            display: flex;
-            flex-direction: column;
-            gap: 1.25rem;
+        .view-panel {
+            display: none;
             height: 100%;
             min-height: 0;
         }
 
-        /* Right Column: Orchestrator Console */
+        .view-panel.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ==============================================================
+           TAB 1: AUTONOMOUS RETRIEVAL DASHBOARD (2-COLUMN GRID)
+           ============================================================== */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 50% 50%;
+            gap: 1.15rem;
+            height: 100%;
+            min-height: 0;
+        }
+
+        .col-left {
+            display: flex;
+            flex-direction: column;
+            gap: 1.15rem;
+            height: 100%;
+            min-height: 0;
+        }
+
         .col-right {
             display: flex;
             flex-direction: column;
@@ -181,9 +267,9 @@
             border-color: var(--border-glow);
         }
 
-        /* 1. Form Card */
+        /* 1. Request Form Card */
         .form-card {
-            padding: 1.25rem 1.5rem;
+            padding: 1.15rem 1.4rem;
             flex-shrink: 0;
         }
 
@@ -191,11 +277,11 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 0.85rem;
+            margin-bottom: 0.75rem;
         }
 
         .card-header-sm h2 {
-            font-size: 0.95rem;
+            font-size: 0.92rem;
             font-weight: 700;
             color: var(--text-primary);
             text-transform: uppercase;
@@ -208,17 +294,17 @@
         .form-grid {
             display: flex;
             flex-direction: column;
-            gap: 0.85rem;
+            gap: 0.75rem;
         }
 
         .field-group {
             display: flex;
             flex-direction: column;
-            gap: 0.35rem;
+            gap: 0.3rem;
         }
 
         label {
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             font-weight: 600;
             color: var(--text-secondary);
             text-transform: uppercase;
@@ -227,12 +313,12 @@
 
         input[type="url"], input[type="text"] {
             width: 100%;
-            padding: 0.75rem 1rem;
+            padding: 0.7rem 0.95rem;
             background: rgba(8, 12, 22, 0.75);
             border: 1px solid var(--border-subtle);
             border-radius: var(--radius-md);
             color: var(--text-primary);
-            font-size: 0.92rem;
+            font-size: 0.9rem;
             font-family: inherit;
             outline: none;
             transition: all 0.2s ease;
@@ -249,12 +335,11 @@
             align-items: center;
             gap: 0.4rem;
             flex-wrap: wrap;
-            margin-top: -0.1rem;
         }
 
         .example-chip {
-            font-size: 0.72rem;
-            padding: 0.25rem 0.55rem;
+            font-size: 0.7rem;
+            padding: 0.22rem 0.5rem;
             background: rgba(255, 255, 255, 0.04);
             border: 1px solid var(--border-subtle);
             border-radius: var(--radius-sm);
@@ -275,17 +360,17 @@
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
-            padding: 0.8rem 1.5rem;
+            padding: 0.75rem 1.4rem;
             background: linear-gradient(135deg, #00e5ff, #0088ff);
             color: #030814;
             border: none;
             border-radius: var(--radius-md);
-            font-size: 0.95rem;
+            font-size: 0.92rem;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.2s ease;
             box-shadow: 0 4px 18px rgba(0, 229, 255, 0.25);
-            margin-top: 0.25rem;
+            margin-top: 0.2rem;
         }
 
         .btn-submit:hover:not(:disabled) {
@@ -300,10 +385,10 @@
             transform: none;
         }
 
-        /* 2. Results Card (Fills lower left) */
+        /* 2. Results Card */
         .result-card {
             flex: 1;
-            padding: 1.25rem 1.5rem;
+            padding: 1.15rem 1.4rem;
             min-height: 0;
             overflow-y: auto;
             position: relative;
@@ -317,24 +402,24 @@
             height: 100%;
             text-align: center;
             color: var(--text-muted);
-            padding: 1.5rem;
-            gap: 0.65rem;
+            padding: 1.25rem;
+            gap: 0.5rem;
         }
 
         .placeholder-icon {
-            font-size: 2.2rem;
+            font-size: 2rem;
             opacity: 0.75;
             filter: drop-shadow(0 0 10px rgba(0, 229, 255, 0.2));
         }
 
         .placeholder-title {
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 600;
             color: var(--text-secondary);
         }
 
         .placeholder-desc {
-            font-size: 0.82rem;
+            font-size: 0.8rem;
             max-width: 380px;
             line-height: 1.5;
         }
@@ -342,7 +427,7 @@
         .result-content {
             display: none;
             flex-direction: column;
-            gap: 0.9rem;
+            gap: 0.75rem;
             height: 100%;
             animation: fadeIn 0.3s ease forwards;
         }
@@ -357,9 +442,9 @@
             display: inline-flex;
             align-items: center;
             gap: 0.45rem;
-            padding: 0.35rem 0.8rem;
+            padding: 0.3rem 0.75rem;
             border-radius: 999px;
-            font-size: 0.78rem;
+            font-size: 0.75rem;
             font-weight: 700;
             letter-spacing: 0.04em;
             text-transform: uppercase;
@@ -378,7 +463,7 @@
         }
 
         .answer-text {
-            font-size: 1.15rem;
+            font-size: 1.1rem;
             font-weight: 600;
             line-height: 1.45;
             color: #ffffff;
@@ -388,12 +473,12 @@
             background: rgba(0, 0, 0, 0.4);
             border-left: 3px solid var(--accent-cyan);
             border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-            padding: 0.85rem 1.15rem;
+            padding: 0.75rem 1rem;
             font-style: italic;
             color: #e2e8f0;
-            font-size: 0.88rem;
+            font-size: 0.85rem;
             line-height: 1.55;
-            max-height: 140px;
+            max-height: 130px;
             overflow-y: auto;
         }
 
@@ -411,8 +496,8 @@
         .meta-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 0.65rem;
-            padding-top: 0.75rem;
+            gap: 0.55rem;
+            padding-top: 0.65rem;
             border-top: 1px solid var(--border-subtle);
             margin-top: auto;
         }
@@ -420,22 +505,22 @@
         .meta-item {
             display: flex;
             flex-direction: column;
-            gap: 0.2rem;
+            gap: 0.15rem;
             background: rgba(255, 255, 255, 0.02);
-            padding: 0.45rem 0.65rem;
+            padding: 0.4rem 0.6rem;
             border-radius: var(--radius-sm);
             border: 1px solid rgba(255, 255, 255, 0.04);
         }
 
         .meta-label {
-            font-size: 0.68rem;
+            font-size: 0.65rem;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.04em;
         }
 
         .meta-value {
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             font-weight: 600;
             color: var(--text-primary);
             overflow: hidden;
@@ -455,10 +540,10 @@
             text-decoration: underline;
         }
 
-        /* 3. Orchestrator Console Card (Right side, full height) */
+        /* 3. Orchestrator Console Card */
         .console-card {
             height: 100%;
-            padding: 1.25rem 1.5rem;
+            padding: 1.15rem 1.4rem;
             min-height: 0;
         }
 
@@ -466,14 +551,14 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 0.85rem;
+            margin-bottom: 0.65rem;
             flex-shrink: 0;
         }
 
         .console-title-group {
             display: flex;
             align-items: center;
-            gap: 0.65rem;
+            gap: 0.6rem;
         }
 
         .pulse-indicator {
@@ -485,7 +570,7 @@
         }
 
         .console-header h3 {
-            font-size: 0.95rem;
+            font-size: 0.92rem;
             font-weight: 700;
             color: var(--text-primary);
             text-transform: uppercase;
@@ -499,9 +584,9 @@
         }
 
         .step-badge {
-            font-size: 0.72rem;
+            font-size: 0.7rem;
             font-family: 'JetBrains Mono', monospace;
-            padding: 0.2rem 0.55rem;
+            padding: 0.2rem 0.5rem;
             background: rgba(139, 92, 246, 0.15);
             border: 1px solid rgba(139, 92, 246, 0.3);
             color: #c084fc;
@@ -510,30 +595,206 @@
 
         .timer-badge {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.82rem;
+            font-size: 0.8rem;
             color: var(--text-muted);
         }
 
+        /* ==============================================================
+           FEATURE 2: VISUAL NAVIGATION TRAIL (BREADCRUMB NODE GRAPH)
+           ============================================================== */
+        .nav-trail-card {
+            background: rgba(8, 12, 22, 0.75);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 0.6rem 0.75rem;
+            margin-bottom: 0.65rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            flex-shrink: 0;
+        }
+
+        .nav-trail-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-trail-title {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .nav-trail-counter {
+            font-size: 0.68rem;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent-cyan);
+            background: rgba(0, 229, 255, 0.1);
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            border: 1px solid rgba(0, 229, 255, 0.25);
+        }
+
+        .nav-trail-track {
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            overflow-x: auto;
+            padding: 0.2rem 0.1rem;
+            scrollbar-width: thin;
+        }
+
+        .trail-idle-text {
+            font-size: 0.74rem;
+            color: var(--text-muted);
+            font-style: italic;
+            padding: 0.3rem 0;
+        }
+
+        .trail-node {
+            display: flex;
+            flex-direction: column;
+            gap: 0.12rem;
+            padding: 0.35rem 0.6rem;
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-sm);
+            min-width: 105px;
+            max-width: 155px;
+            flex-shrink: 0;
+            position: relative;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .trail-node:hover {
+            border-color: var(--accent-cyan);
+            background: rgba(15, 23, 42, 1);
+            transform: translateY(-1px);
+        }
+
+        .trail-node.node-start {
+            border-color: rgba(0, 229, 255, 0.4);
+            background: rgba(0, 229, 255, 0.05);
+        }
+
+        .trail-node.node-search {
+            border-color: rgba(139, 92, 246, 0.45);
+            background: rgba(139, 92, 246, 0.08);
+        }
+
+        .trail-node.node-active {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 10px rgba(0, 229, 255, 0.25);
+            animation: nodePulse 1.8s infinite;
+        }
+
+        .trail-node.node-success {
+            border-color: rgba(16, 185, 129, 0.6);
+            background: rgba(16, 185, 129, 0.12);
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.25);
+        }
+
+        .trail-node.node-fail {
+            border-color: rgba(244, 63, 94, 0.6);
+            background: rgba(244, 63, 94, 0.1);
+        }
+
+        @keyframes nodePulse {
+            0%, 100% { border-color: var(--accent-cyan); }
+            50% { border-color: rgba(0, 229, 255, 0.4); }
+        }
+
+        .trail-node-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .trail-node-step {
+            font-size: 0.6rem;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+
+        .trail-node-icon {
+            font-size: 0.72rem;
+        }
+
+        .trail-node-title {
+            font-size: 0.76rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .trail-node-sub {
+            font-size: 0.62rem;
+            color: var(--text-secondary);
+            font-family: 'JetBrains Mono', monospace;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .trail-connector {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.15rem;
+            flex-shrink: 0;
+            padding: 0 0.15rem;
+        }
+
+        .connector-line {
+            display: flex;
+            align-items: center;
+            color: var(--accent-cyan);
+            font-size: 0.75rem;
+            font-weight: 900;
+        }
+
+        .connector-action {
+            font-size: 0.6rem;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-muted);
+            white-space: nowrap;
+            background: rgba(255, 255, 255, 0.04);
+            padding: 0.08rem 0.35rem;
+            border-radius: 4px;
+        }
+
+        /* Stream Box (Terminal) */
         .stream-box {
             background: #040710;
             border: 1px solid var(--border-subtle);
             border-radius: var(--radius-md);
-            padding: 1rem;
+            padding: 0.85rem;
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             line-height: 1.6;
             flex: 1;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 0.45rem;
+            gap: 0.4rem;
             min-height: 0;
         }
 
         .stream-idle-msg {
             color: var(--text-muted);
             font-style: italic;
-            font-size: 0.82rem;
+            font-size: 0.8rem;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -544,7 +805,7 @@
         .log-entry {
             display: flex;
             align-items: flex-start;
-            gap: 0.65rem;
+            gap: 0.6rem;
             animation: fadeIn 0.15s ease forwards;
         }
 
@@ -556,7 +817,7 @@
         .log-tag {
             padding: 0.12rem 0.4rem;
             border-radius: 4px;
-            font-size: 0.68rem;
+            font-size: 0.66rem;
             font-weight: 700;
             text-transform: uppercase;
             flex-shrink: 0;
@@ -568,6 +829,258 @@
         .tag-verifying { background: rgba(245, 158, 11, 0.18); color: #fbbf24; }
         .tag-rejected { background: rgba(244, 63, 94, 0.18); color: #fb7185; }
         .tag-done { background: rgba(16, 185, 129, 0.28); color: #10b981; }
+
+        /* ==============================================================
+           FEATURE 1: IN-BROWSER BATCH BENCHMARK RUNNER (TAB 2)
+           ============================================================== */
+        .benchmark-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            height: 100%;
+            min-height: 0;
+        }
+
+        .benchmark-controls-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 1rem 1.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-shrink: 0;
+        }
+
+        .benchmark-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-bench {
+            padding: 0.55rem 1rem;
+            border-radius: var(--radius-md);
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid var(--border-subtle);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .btn-bench:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-bench-primary {
+            background: linear-gradient(135deg, #00e5ff, #0088ff);
+            color: #030814;
+            border: none;
+            font-weight: 700;
+            box-shadow: 0 0 15px rgba(0, 229, 255, 0.25);
+        }
+
+        .btn-bench-primary:hover:not(:disabled) {
+            filter: brightness(1.1);
+            transform: translateY(-1px);
+        }
+
+        .btn-bench-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .benchmark-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        .stat-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 0.85rem 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+
+        .stat-label {
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .stat-val {
+            font-size: 1.35rem;
+            font-weight: 800;
+            font-family: 'JetBrains Mono', monospace;
+            color: #ffffff;
+        }
+
+        .benchmark-table-card {
+            flex: 1;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 1rem 1.4rem;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        .table-header-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        .table-scroll {
+            flex: 1;
+            overflow-y: auto;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            background: rgba(6, 9, 17, 0.6);
+        }
+
+        table.bench-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+            text-align: left;
+        }
+
+        table.bench-table th {
+            position: sticky;
+            top: 0;
+            background: #090f1d;
+            padding: 0.65rem 0.85rem;
+            color: var(--text-secondary);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid var(--border-subtle);
+            z-index: 10;
+        }
+
+        table.bench-table td {
+            padding: 0.65rem 0.85rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            color: var(--text-primary);
+            vertical-align: middle;
+        }
+
+        table.bench-table tr:hover td {
+            background: rgba(255, 255, 255, 0.025);
+        }
+
+        .diff-badge {
+            font-size: 0.65rem;
+            padding: 0.15rem 0.45rem;
+            border-radius: 4px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .diff-easy { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+        .diff-medium { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+        .diff-impossible { background: rgba(244, 63, 94, 0.15); color: #fb7185; }
+
+        /* ==============================================================
+           FEATURE 3: AMD ROCm HARDWARE MODAL
+           ============================================================== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-card {
+            background: #0b1120;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            width: 90%;
+            max-width: 580px;
+            padding: 1.75rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-header h3 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-close-modal {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.25rem;
+            cursor: pointer;
+        }
+
+        .rocm-specs-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.65rem;
+        }
+
+        .spec-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.55rem 0.75rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.82rem;
+        }
+
+        .spec-name {
+            color: var(--text-secondary);
+        }
+
+        .spec-val {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            color: var(--accent-cyan);
+        }
 
         /* Responsive Breakpoints */
         @media (max-width: 1080px) {
@@ -588,6 +1101,9 @@
             .meta-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
+            .benchmark-stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
     </style>
 </head>
@@ -600,126 +1116,417 @@
             </div>
             <div class="match-badge">AMD AI League Match 4</div>
         </div>
-        <div class="status-pill" id="agent-status-pill">
-            <div class="status-dot"></div>
-            <span id="agent-status-text">Ready</span>
+
+        <!-- Navigation Tabs -->
+        <div class="tab-nav">
+            <button class="tab-btn active" id="tab-btn-retrieval" onclick="switchTab('retrieval')">
+                <span>🎯</span> Autonomous Retrieval
+            </button>
+            <button class="tab-btn" id="tab-btn-benchmark" onclick="switchTab('benchmark')">
+                <span>📊</span> Match 4 Benchmark Suite
+            </button>
+        </div>
+
+        <div class="header-right">
+            <!-- Feature 3: AMD ROCm Hardware Telemetry Chip -->
+            <div class="rocm-chip" onclick="openRocmModal()" title="Click to view AMD ROCm acceleration profile">
+                <span class="rocm-dot"></span>
+                <span>AMD ROCm 6.2 | MI300X Ready</span>
+            </div>
+            <div class="status-pill" id="agent-status-pill">
+                <div class="status-dot"></div>
+                <span id="agent-status-text">Ready</span>
+            </div>
         </div>
     </header>
 
     <main>
-        <div class="dashboard-grid">
-            <!-- LEFT COLUMN: Input Form (Top) + Verified Results (Bottom) -->
-            <div class="col-left">
-                <!-- 1. Retrieval Request Form -->
-                <div class="glass-card form-card">
-                    <div class="card-header-sm">
-                        <h2><span>🎯</span> Retrieval Request</h2>
+        <!-- ==============================================================
+             TAB 1: AUTONOMOUS RETRIEVAL DASHBOARD (2-COLUMN GRID)
+             ============================================================== -->
+        <div class="view-panel active" id="view-retrieval">
+            <div class="dashboard-grid">
+                <!-- LEFT COLUMN: Input Form (Top) + Verified Results (Bottom) -->
+                <div class="col-left">
+                    <!-- 1. Retrieval Request Form -->
+                    <div class="glass-card form-card">
+                        <div class="card-header-sm">
+                            <h2><span>🎯</span> Retrieval Request</h2>
+                        </div>
+                        <form id="retrieval-form" class="form-grid" onsubmit="event.preventDefault(); startRetrieval();">
+                            <div class="field-group">
+                                <label for="input-url">Starting Website URL</label>
+                                <input type="url" id="input-url" placeholder="https://www.wikipedia.org/" required value="https://www.wikipedia.org/">
+                            </div>
+
+                            <div class="field-group">
+                                <label for="input-question">Natural-Language Question</label>
+                                <input type="text" id="input-question" placeholder="Who was Mahatma Gandhi?" required value="Who was Mahatma Gandhi?">
+                            </div>
+
+                            <div class="examples-row">
+                                <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: 600;">Examples:</span>
+                                <button type="button" class="example-chip" onclick="fillExample('https://www.wikipedia.org/', 'Who was Mahatma Gandhi?')">Wikipedia: Mahatma Gandhi</button>
+                                <button type="button" class="example-chip" onclick="fillExample('https://fastapi.tiangolo.com/', 'What framework is FastAPI based on for web routing?')">FastAPI Foundations</button>
+                                <button type="button" class="example-chip" onclick="fillExample('https://rocm.docs.amd.com/en/latest/', 'What is AMD ROCm according to the documentation overview?')">AMD ROCm Overview</button>
+                                <button type="button" class="example-chip" onclick="fillExample('https://pydantic.dev/', 'What language was Pydantic Core rewritten in?')">Pydantic Core</button>
+                                <button type="button" class="example-chip" onclick="fillExample('https://fastapi.tiangolo.com/', 'What is the secret 90% discount code for enterprise?')">Impossible Query</button>
+                            </div>
+
+                            <button type="submit" id="btn-submit" class="btn-submit">
+                                <span>Initiate Retrieval Run</span>
+                                <span id="btn-spinner" style="display: none;">⏳</span>
+                            </button>
+                        </form>
                     </div>
-                    <form id="retrieval-form" class="form-grid" onsubmit="event.preventDefault(); startRetrieval();">
-                        <div class="field-group">
-                            <label for="input-url">Starting Website URL</label>
-                            <input type="url" id="input-url" placeholder="https://www.wikipedia.org/" required value="https://www.wikipedia.org/">
+
+                    <!-- 2. Final Results Card -->
+                    <div class="glass-card result-card" id="result-card">
+                        <div class="result-placeholder" id="result-placeholder">
+                            <div class="placeholder-icon">📋</div>
+                            <div class="placeholder-title">Verified Findings & Proof</div>
+                            <div class="placeholder-desc">When retrieval completes, the verified answer, exact verbatim evidence quote, and source link will appear here.</div>
                         </div>
 
-                        <div class="field-group">
-                            <label for="input-question">Natural-Language Question</label>
-                            <input type="text" id="input-question" placeholder="Who was Mahatma Gandhi?" required value="Who was Mahatma Gandhi?">
-                        </div>
+                        <div class="result-content" id="result-content">
+                            <div class="result-top-bar">
+                                <div id="result-badge-container"></div>
+                            </div>
 
-                        <div class="examples-row">
-                            <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 600;">Examples:</span>
-                            <button type="button" class="example-chip" onclick="fillExample('https://www.wikipedia.org/', 'Who was Mahatma Gandhi?')">Wikipedia: Mahatma Gandhi</button>
-                            <button type="button" class="example-chip" onclick="fillExample('https://fastapi.tiangolo.com/', 'What framework is FastAPI based on for web routing?')">FastAPI Foundations</button>
-                            <button type="button" class="example-chip" onclick="fillExample('https://rocm.docs.amd.com/en/latest/', 'What is AMD ROCm according to the documentation overview?')">AMD ROCm Overview</button>
-                            <button type="button" class="example-chip" onclick="fillExample('https://pydantic.dev/', 'What language was Pydantic Core rewritten in?')">Pydantic Core</button>
-                            <button type="button" class="example-chip" onclick="fillExample('https://fastapi.tiangolo.com/', 'What is the secret 90% discount code for enterprise?')">Impossible Query</button>
-                        </div>
+                            <div class="answer-text" id="result-answer"></div>
 
-                        <button type="submit" id="btn-submit" class="btn-submit">
-                            <span>Initiate Retrieval Run</span>
-                            <span id="btn-spinner" style="display: none;">⏳</span>
-                        </button>
-                    </form>
+                            <div class="evidence-quote-box" id="evidence-box">
+                                <div class="quote-label">Verified Verbatim Proof</div>
+                                <div id="result-quote"></div>
+                            </div>
+
+                            <div class="meta-grid">
+                                <div class="meta-item">
+                                    <span class="meta-label">Source Document</span>
+                                    <div class="meta-value" id="result-source">-</div>
+                                </div>
+                                <div class="meta-item">
+                                    <span class="meta-label">Pages Inspected</span>
+                                    <span class="meta-value" id="result-pages">0</span>
+                                </div>
+                                <div class="meta-item">
+                                    <span class="meta-label">Steps Taken</span>
+                                    <span class="meta-value" id="result-steps">0</span>
+                                </div>
+                                <div class="meta-item">
+                                    <span class="meta-label">Total Latency</span>
+                                    <span class="meta-value" id="result-time">0.0s</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- 2. Final Results Card -->
-                <div class="glass-card result-card" id="result-card">
-                    <!-- Placeholder state (visible before run) -->
-                    <div class="result-placeholder" id="result-placeholder">
-                        <div class="placeholder-icon">📋</div>
-                        <div class="placeholder-title">Verified Findings & Proof</div>
-                        <div class="placeholder-desc">When retrieval completes, the verified answer, exact verbatim evidence quote, and source link will appear here.</div>
-                    </div>
-
-                    <!-- Populated result state -->
-                    <div class="result-content" id="result-content">
-                        <div class="result-top-bar">
-                            <div id="result-badge-container"></div>
+                <!-- RIGHT COLUMN: Console + Visual Navigation Trail -->
+                <div class="col-right">
+                    <div class="glass-card console-card" id="console-container">
+                        <div class="console-header">
+                            <div class="console-title-group">
+                                <div class="pulse-indicator"></div>
+                                <h3>Live Orchestrator Progress</h3>
+                            </div>
+                            <div class="console-tools">
+                                <span class="step-badge" id="console-step-badge">IDLE</span>
+                                <span class="timer-badge" id="console-timer">0.0s</span>
+                            </div>
                         </div>
 
-                        <div class="answer-text" id="result-answer"></div>
-
-                        <div class="evidence-quote-box" id="evidence-box">
-                            <div class="quote-label">Verified Verbatim Proof</div>
-                            <div id="result-quote"></div>
+                        <!-- FEATURE 2: VISUAL NAVIGATION TRAIL -->
+                        <div class="nav-trail-card" id="nav-trail-card">
+                            <div class="nav-trail-header">
+                                <div class="nav-trail-title">
+                                    <span>🧭</span>
+                                    <span>Live Traversal Path</span>
+                                </div>
+                                <span class="nav-trail-counter" id="nav-trail-counter">0 hops</span>
+                            </div>
+                            <div class="nav-trail-track" id="nav-trail-track">
+                                <div class="trail-idle-text" id="trail-idle-text">Ready. Traversal graph will render here during search.</div>
+                            </div>
                         </div>
 
-                        <div class="meta-grid">
-                            <div class="meta-item">
-                                <span class="meta-label">Source Document</span>
-                                <div class="meta-value" id="result-source">-</div>
-                            </div>
-                            <div class="meta-item">
-                                <span class="meta-label">Pages Inspected</span>
-                                <span class="meta-value" id="result-pages">0</span>
-                            </div>
-                            <div class="meta-item">
-                                <span class="meta-label">Steps Taken</span>
-                                <span class="meta-value" id="result-steps">0</span>
-                            </div>
-                            <div class="meta-item">
-                                <span class="meta-label">Total Latency</span>
-                                <span class="meta-value" id="result-time">0.0s</span>
-                            </div>
+                        <!-- Monospace Stream Box (Terminal) -->
+                        <div class="stream-box" id="stream-box">
+                            <div class="stream-idle-msg">Ready for run. Enter a target URL and question on the left to start.</div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- RIGHT COLUMN: 3. Live Orchestrator Progress (Full Height) -->
-            <div class="col-right">
-                <div class="glass-card console-card" id="console-container">
-                    <div class="console-header">
-                        <div class="console-title-group">
-                            <div class="pulse-indicator"></div>
-                            <h3>Live Orchestrator Progress</h3>
-                        </div>
-                        <div class="console-tools">
-                            <span class="step-badge" id="console-step-badge">IDLE</span>
-                            <span class="timer-badge" id="console-timer">0.0s</span>
-                        </div>
+        <!-- ==============================================================
+             TAB 2: FEATURE 1 - BATCH BENCHMARK RUNNER
+             ============================================================== -->
+        <div class="view-panel" id="view-benchmark">
+            <div class="benchmark-container">
+                <!-- Controls Card -->
+                <div class="benchmark-controls-card">
+                    <div class="benchmark-actions">
+                        <button class="btn-bench btn-bench-primary" id="btn-run-all-bench" onclick="runBenchmark()">
+                            <span>▶ Run Benchmark</span>
+                        </button>
+                        <button class="btn-bench" onclick="loadDefaultBenchmarkQuestions()">
+                            <span>📥 Load Match 4 Questions (29)</span>
+                        </button>
+                        <label class="btn-bench" style="cursor: pointer;">
+                            <span>📁 Upload JSON/JSONL</span>
+                            <input type="file" id="bench-file-input" accept=".json,.jsonl" style="display: none;" onchange="handleBenchFileUpload(event)">
+                        </label>
+                        <button class="btn-bench" onclick="exportBenchmarkJson()">
+                            <span>💾 Export Match 4 JSON</span>
+                        </button>
                     </div>
-                    <div class="stream-box" id="stream-box">
-                        <div class="stream-idle-msg">Ready for run. Enter a target URL and question to launch autonomous site retrieval.</div>
+                    <div id="bench-progress-status" style="font-size: 0.82rem; font-family: 'JetBrains Mono', monospace; color: var(--text-secondary);">
+                        Loaded: <span id="bench-loaded-count" style="color: var(--accent-cyan); font-weight: 700;">0</span> questions
+                    </div>
+                </div>
+
+                <!-- Stats Overview Grid -->
+                <div class="benchmark-stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-label">Evaluated</span>
+                        <span class="stat-val" id="stat-total">0 / 0</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Overall Accuracy</span>
+                        <span class="stat-val" id="stat-accuracy" style="color: var(--accent-emerald);">--%</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Hallucination Rate</span>
+                        <span class="stat-val" id="stat-hallucination" style="color: var(--accent-cyan);">0.0%</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Avg Steps</span>
+                        <span class="stat-val" id="stat-avg-steps">0.0</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Avg Time / Query</span>
+                        <span class="stat-val" id="stat-avg-time">0.0s</span>
+                    </div>
+                </div>
+
+                <!-- Benchmark Questions & Results Table -->
+                <div class="benchmark-table-card">
+                    <div class="table-header-group">
+                        <h3 style="font-size: 0.95rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Benchmark Evaluation Dataset</h3>
+                        <span id="bench-run-indicator" style="font-size: 0.78rem; font-family: 'JetBrains Mono', monospace; color: var(--text-muted);">Idle</span>
+                    </div>
+                    <div class="table-scroll">
+                        <table class="bench-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px;">ID</th>
+                                    <th style="width: 100px;">Difficulty</th>
+                                    <th style="width: 32%;">Question & Start URL</th>
+                                    <th style="width: 32%;">Predicted Answer / Proof</th>
+                                    <th style="width: 70px;">Steps</th>
+                                    <th style="width: 70px;">Time</th>
+                                    <th style="width: 90px;">Verdict</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bench-table-body">
+                                <tr>
+                                    <td colspan="7" style="text-align: center; padding: 2.5rem; color: var(--text-muted); font-style: italic;">
+                                        Click "Load Match 4 Questions" or upload a dataset file above to populate the benchmark suite.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
     </main>
 
+    <!-- ==============================================================
+         FEATURE 3: AMD ROCm HARDWARE MODAL
+         ============================================================== -->
+    <div class="modal-overlay" id="rocm-modal" onclick="if(event.target === this) closeRocmModal()">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3><span>⚡</span> AMD ROCm 6.2 Acceleration Profile</h3>
+                <button class="btn-close-modal" onclick="closeRocmModal()">✕</button>
+            </div>
+            <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5;">
+                Engineered for high-throughput, low-latency execution across AMD Instinct and ROCm AI accelerators with zero code changes.
+            </p>
+            <div class="rocm-specs-list">
+                <div class="spec-item">
+                    <span class="spec-name">Target Hardware Platform</span>
+                    <span class="spec-val">AMD Instinct MI300X / ROCm 6.2+</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-name">Inference Acceleration Engine</span>
+                    <span class="spec-val">vLLM on ROCm (OpenAI API Compatible)</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-name">Retrieval Chunk Ranker</span>
+                    <span class="spec-val">BM25Okapi Vector Scoring</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-name">Accuracy Guardrails</span>
+                    <span class="spec-val">Dual Verifier (Code Substring + LLM Entailment)</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-name">SSRF & Confinement Guard</span>
+                    <span class="spec-val">RFC1918 Private IP Block & Registered Domain</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-name">Hallucination Mitigation</span>
+                    <span class="spec-val">Explicit 0.0% Hallucination Target on Impossible Queries</span>
+                </div>
+            </div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; background: rgba(0,0,0,0.4); padding: 0.75rem; border-radius: var(--radius-sm);">
+                # Switch to local AMD ROCm vLLM instance via .env:<br>
+                LLM_API_BASE=http://localhost:8000/v1<br>
+                LLM_MODEL=meta-llama/Meta-Llama-3-8B-Instruct
+            </div>
+        </div>
+    </div>
+
+    <!-- ==============================================================
+         JAVASCRIPT LOGIC
+         ============================================================== -->
     <script>
         let eventSource = null;
         let timerInterval = null;
         let startTime = 0;
+        let trailNodes = [];
+        let benchmarkQuestions = [];
+        let benchmarkResults = [];
+        let isBenchRunning = false;
+
+        // Tab Switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.view-panel').forEach(panel => panel.classList.remove('active'));
+
+            if (tabName === 'retrieval') {
+                document.getElementById('tab-btn-retrieval').classList.add('active');
+                document.getElementById('view-retrieval').classList.add('active');
+            } else if (tabName === 'benchmark') {
+                document.getElementById('tab-btn-benchmark').classList.add('active');
+                document.getElementById('view-benchmark').classList.add('active');
+                if (benchmarkQuestions.length === 0) {
+                    loadDefaultBenchmarkQuestions();
+                }
+            }
+        }
+
+        // Modal Handlers
+        function openRocmModal() {
+            document.getElementById('rocm-modal').style.display = 'flex';
+        }
+        function closeRocmModal() {
+            document.getElementById('rocm-modal').style.display = 'none';
+        }
 
         function fillExample(url, question) {
             document.getElementById('input-url').value = url;
             document.getElementById('input-question').value = question;
         }
 
+        // ==============================================================
+        // FEATURE 2: VISUAL NAVIGATION TRAIL FUNCTIONS
+        // ==============================================================
+        function resetNavTrail(startUrl) {
+            trailNodes = [];
+            const track = document.getElementById('nav-trail-track');
+            const counter = document.getElementById('nav-trail-counter');
+            track.innerHTML = '';
+            counter.textContent = '0 hops';
+            addTrailNode(startUrl, 'START', 'node-start', '🌐');
+        }
+
+        function parseUrlLabel(url) {
+            try {
+                const u = new URL(url);
+                let path = u.pathname.replace(/^\/+/g, '').replace(/\/+$/g, '');
+                if (!path) return { host: u.hostname, sub: '/' };
+                let parts = path.split('/');
+                let lastPart = decodeURIComponent(parts[parts.length - 1] || parts[0]);
+                return { host: lastPart || u.hostname, sub: u.hostname };
+            } catch (e) {
+                return { host: url.slice(0, 18), sub: '' };
+            }
+        }
+
+        function addTrailNode(url, badgeText, statusClass, icon = '📄') {
+            const track = document.getElementById('nav-trail-track');
+            const counter = document.getElementById('nav-trail-counter');
+
+            // Don't duplicate adjacent node
+            if (trailNodes.length > 0 && trailNodes[trailNodes.length - 1].url === url) {
+                return;
+            }
+
+            // Remove active glow from previous node
+            if (trailNodes.length > 0) {
+                trailNodes[trailNodes.length - 1].el.classList.remove('node-active');
+            }
+
+            const { host, sub } = parseUrlLabel(url);
+            const nodeEl = document.createElement('a');
+            nodeEl.className = `trail-node ${statusClass} node-active`;
+            nodeEl.href = url;
+            nodeEl.target = '_blank';
+            nodeEl.rel = 'noopener noreferrer';
+            nodeEl.title = url;
+
+            nodeEl.innerHTML = `
+                <div class="trail-node-top">
+                    <span class="trail-node-step">${badgeText}</span>
+                    <span class="trail-node-icon">${icon}</span>
+                </div>
+                <div class="trail-node-title">${host}</div>
+                <div class="trail-node-sub">${sub}</div>
+            `;
+
+            track.appendChild(nodeEl);
+            trailNodes.push({ url, badgeText, el: nodeEl });
+            counter.textContent = `${trailNodes.length} ${trailNodes.length === 1 ? 'hop' : 'hops'}`;
+            track.scrollLeft = track.scrollWidth;
+        }
+
+        function addTrailConnector(actionText) {
+            const track = document.getElementById('nav-trail-track');
+            const connEl = document.createElement('div');
+            connEl.className = 'trail-connector';
+            connEl.innerHTML = `
+                <span class="connector-line">──►</span>
+                <span class="connector-action">${actionText}</span>
+            `;
+            track.appendChild(connEl);
+            track.scrollLeft = track.scrollWidth;
+        }
+
+        function finalizeTrail(isSuccess, finalUrl) {
+            if (trailNodes.length === 0) return;
+            const lastNode = trailNodes[trailNodes.length - 1];
+            lastNode.el.classList.remove('node-active');
+            if (isSuccess) {
+                lastNode.el.classList.add('node-success');
+                const icon = lastNode.el.querySelector('.trail-node-icon');
+                if (icon) icon.textContent = '🎯';
+                const step = lastNode.el.querySelector('.trail-node-step');
+                if (step) step.textContent = 'VERIFIED';
+            } else {
+                lastNode.el.classList.add('node-fail');
+                const icon = lastNode.el.querySelector('.trail-node-icon');
+                if (icon) icon.textContent = '✕';
+                const step = lastNode.el.querySelector('.trail-node-step');
+                if (step) step.textContent = 'ABSENT';
+            }
+        }
+
+        // Logging
         function appendLog(tag, tagClass, text) {
             const streamBox = document.getElementById('stream-box');
-            // Remove idle message if present
             const idleMsg = streamBox.querySelector('.stream-idle-msg');
             if (idleMsg) idleMsg.remove();
 
@@ -730,12 +1537,14 @@
             streamBox.scrollTop = streamBox.scrollHeight;
         }
 
+        // ==============================================================
+        // SINGLE RETRIEVAL RUN
+        // ==============================================================
         function startRetrieval() {
             const url = document.getElementById('input-url').value.trim();
             const question = document.getElementById('input-question').value.trim();
             if (!url || !question) return;
 
-            // UI Reset
             if (eventSource) eventSource.close();
             if (timerInterval) clearInterval(timerInterval);
 
@@ -753,7 +1562,8 @@
             statusText.textContent = 'Navigating...';
             stepBadge.textContent = 'STEP 1';
 
-            // Reset results card to active progress view
+            resetNavTrail(url);
+
             resultPlaceholder.style.display = 'flex';
             resultPlaceholder.innerHTML = `
                 <div class="placeholder-icon" style="animation: pulse 1.5s infinite;">⚡</div>
@@ -770,7 +1580,6 @@
 
             appendLog('START', 'tag-fetching', `Task started on ${url}`);
 
-            // Connect to Server-Sent Events stream
             const streamUrl = `/api/retrieve/stream?url=${encodeURIComponent(url)}&question=${encodeURIComponent(question)}`;
             eventSource = new EventSource(streamUrl);
 
@@ -783,6 +1592,9 @@
                 const data = JSON.parse(e.data);
                 stepBadge.textContent = `STEP ${data.step}`;
                 appendLog('FETCH', 'tag-fetching', `[Step ${data.step}] Fetching ${data.url}`);
+                if (trailNodes.length > 0 && trailNodes[trailNodes.length - 1].url !== data.url) {
+                    addTrailNode(data.url, `STEP ${data.step}`, '', '📄');
+                }
             });
 
             eventSource.addEventListener('planning', (e) => {
@@ -796,10 +1608,13 @@
                 const act = data.action;
                 if (act.action === 'open_link') {
                     appendLog('ACTION', 'tag-action', `Decision: Open Link #${act.link_number} (${act.reasoning || 'relevant'})`);
+                    addTrailConnector(`🔗 Link #${act.link_number}`);
                 } else if (act.action === 'open_url') {
                     appendLog('ACTION', 'tag-action', `Decision: Navigate to ${act.url}`);
+                    addTrailConnector(`🌐 goto`);
                 } else if (act.action === 'search_site') {
                     appendLog('SEARCH', 'tag-action', `Decision: Site search for "${act.query}"`);
+                    addTrailConnector(`🔍 search: "${act.query.slice(0, 14)}..."`);
                 } else if (act.action === 'answer') {
                     appendLog('ANSWER', 'tag-verifying', `Proposing answer: "${act.answer}"`);
                 } else if (act.action === 'give_up') {
@@ -822,6 +1637,7 @@
                 const res = data.result;
                 stepBadge.textContent = 'COMPLETE';
                 appendLog('FINISH', 'tag-done', `Run concluded in ${res.steps} steps (${res.elapsed_seconds}s).`);
+                finalizeTrail(res.found, res.source_url);
                 displayResult(res);
                 finishRun();
             });
@@ -869,6 +1685,252 @@
 
             placeholder.style.display = 'none';
             content.style.display = 'flex';
+        }
+
+        // ==============================================================
+        // FEATURE 1: BENCHMARK SUITE LOGIC
+        // ==============================================================
+        async function loadDefaultBenchmarkQuestions() {
+            try {
+                const res = await fetch('/api/benchmark/questions');
+                const items = await res.json();
+                benchmarkQuestions = items;
+                benchmarkResults = [];
+                renderBenchmarkTable();
+                updateBenchmarkStats();
+            } catch (err) {
+                console.error("Failed loading benchmark questions:", err);
+            }
+        }
+
+        function handleBenchFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result.trim();
+                const items = [];
+                if (file.name.endsWith('.jsonl')) {
+                    text.splitlines ? text.splitlines() : text.split('\n').forEach((line, idx) => {
+                        line = line.trim();
+                        if (line) {
+                            try {
+                                const parsed = JSON.parse(line);
+                                if (!parsed.id) parsed.id = `q${idx + 1}`;
+                                items.push(parsed);
+                            } catch (_) {}
+                        }
+                    });
+                } else {
+                    try {
+                        const parsed = JSON.parse(text);
+                        if (Array.isArray(parsed)) {
+                            items.push(...parsed);
+                        } else {
+                            items.push(parsed);
+                        }
+                    } catch (_) {}
+                }
+
+                benchmarkQuestions = items;
+                benchmarkResults = [];
+                renderBenchmarkTable();
+                updateBenchmarkStats();
+            };
+            reader.readAsText(file);
+        }
+
+        function renderBenchmarkTable() {
+            const tbody = document.getElementById('bench-table-body');
+            document.getElementById('bench-loaded-count').textContent = benchmarkQuestions.length;
+
+            if (benchmarkQuestions.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 2rem; color: var(--text-muted);">No questions loaded.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = benchmarkQuestions.map((q, idx) => {
+                const res = benchmarkResults.find(r => r.id === q.id);
+                const diff = (q.difficulty || 'medium').toLowerCase();
+                const diffBadge = `<span class="diff-badge diff-${diff}">${q.difficulty || 'medium'}</span>`;
+
+                let statusBadge = '<span style="color: var(--text-muted);">Pending</span>';
+                let answerText = '-';
+                let stepsText = '-';
+                let timeText = '-';
+
+                if (res) {
+                    if (res.is_running) {
+                        statusBadge = '<span style="color: var(--accent-cyan); animation: pulse 1s infinite;">⚡ Running...</span>';
+                    } else if (res.is_correct) {
+                        statusBadge = '<span style="color: var(--accent-emerald); font-weight: 700;">✓ Pass</span>';
+                        answerText = res.found ? (res.answer || res.evidence_quote) : `[Absent] ${res.explanation || ''}`;
+                        stepsText = res.steps || 1;
+                        timeText = `${res.elapsed_seconds}s`;
+                    } else {
+                        statusBadge = '<span style="color: var(--accent-rose); font-weight: 700;">✕ Fail</span>';
+                        answerText = res.error || res.explanation || 'Answer rejected or missing';
+                        stepsText = res.steps || 0;
+                        timeText = `${res.elapsed_seconds || 0}s`;
+                    }
+                }
+
+                return `
+                    <tr id="bench-row-${q.id || idx}">
+                        <td style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-secondary);">${q.id || `q${idx+1}`}</td>
+                        <td>${diffBadge}</td>
+                        <td>
+                            <div style="font-weight: 600; margin-bottom: 2px;">${q.question}</div>
+                            <div style="font-size: 0.72rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace;">${q.url}</div>
+                        </td>
+                        <td style="max-width: 320px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.78rem;">${answerText}</td>
+                        <td style="font-family: 'JetBrains Mono', monospace;">${stepsText}</td>
+                        <td style="font-family: 'JetBrains Mono', monospace;">${timeText}</td>
+                        <td>${statusBadge}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function updateBenchmarkStats() {
+            const completed = benchmarkResults.filter(r => !r.is_running);
+            const total = benchmarkQuestions.length;
+
+            document.getElementById('stat-total').textContent = `${completed.length} / ${total}`;
+
+            if (completed.length === 0) {
+                document.getElementById('stat-accuracy').textContent = '--%';
+                document.getElementById('stat-hallucination').textContent = '0.0%';
+                document.getElementById('stat-avg-steps').textContent = '0.0';
+                document.getElementById('stat-avg-time').textContent = '0.0s';
+                return;
+            }
+
+            const correctCount = completed.filter(r => r.is_correct).length;
+            const accuracy = ((correctCount / completed.length) * 100).toFixed(1);
+            document.getElementById('stat-accuracy').textContent = `${accuracy}%`;
+
+            // Hallucination rate on impossible questions
+            const impossibleCompleted = completed.filter(r => (r.difficulty || '').toLowerCase() === 'impossible');
+            const hallucinated = impossibleCompleted.filter(r => r.found === true).length;
+            const hallucinationRate = impossibleCompleted.length > 0 
+                ? ((hallucinated / impossibleCompleted.length) * 100).toFixed(1)
+                : '0.0';
+            document.getElementById('stat-hallucination').textContent = `${hallucinationRate}%`;
+
+            const avgSteps = (completed.reduce((acc, r) => acc + (r.steps || 0), 0) / completed.length).toFixed(1);
+            document.getElementById('stat-avg-steps').textContent = avgSteps;
+
+            const avgTime = (completed.reduce((acc, r) => acc + (r.elapsed_seconds || 0), 0) / completed.length).toFixed(1);
+            document.getElementById('stat-avg-time').textContent = `${avgTime}s`;
+        }
+
+        async function runBenchmark() {
+            if (isBenchRunning || benchmarkQuestions.length === 0) return;
+            isBenchRunning = true;
+            document.getElementById('btn-run-all-bench').disabled = true;
+            document.getElementById('bench-run-indicator').textContent = 'Running Batch Evaluation...';
+
+            for (let i = 0; i < benchmarkQuestions.length; i++) {
+                const q = benchmarkQuestions[i];
+
+                // Mark as running
+                const existingIdx = benchmarkResults.findIndex(r => r.id === q.id);
+                const runningEntry = { id: q.id, difficulty: q.difficulty, is_running: true };
+                if (existingIdx !== -1) {
+                    benchmarkResults[existingIdx] = runningEntry;
+                } else {
+                    benchmarkResults.push(runningEntry);
+                }
+                renderBenchmarkTable();
+                updateBenchmarkStats();
+
+                try {
+                    const res = await fetch('/api/retrieve', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ url: q.url, question: q.question })
+                    });
+                    const data = await res.json();
+
+                    // Check correctness
+                    let isCorrect = false;
+                    const expectedFound = q.expected_found !== undefined ? q.expected_found : true;
+                    if (q.difficulty === 'impossible' || expectedFound === false) {
+                        isCorrect = (data.found === false);
+                    } else if (data.found) {
+                        if (q.expected_keywords && q.expected_keywords.length > 0) {
+                            const fullText = `${data.answer || ''} ${data.evidence_quote || ''}`.toLowerCase();
+                            isCorrect = q.expected_keywords.some(k => fullText.includes(k.toLowerCase()));
+                        } else {
+                            isCorrect = true;
+                        }
+                    }
+
+                    const finalResult = {
+                        id: q.id,
+                        difficulty: q.difficulty,
+                        found: data.found,
+                        status: data.status,
+                        answer: data.answer,
+                        evidence_quote: data.evidence_quote,
+                        source_url: data.source_url,
+                        explanation: data.explanation,
+                        steps: data.steps,
+                        elapsed_seconds: data.elapsed_seconds,
+                        is_correct: isCorrect,
+                        is_running: false
+                    };
+
+                    const rIdx = benchmarkResults.findIndex(r => r.id === q.id);
+                    benchmarkResults[rIdx] = finalResult;
+                } catch (err) {
+                    const rIdx = benchmarkResults.findIndex(r => r.id === q.id);
+                    benchmarkResults[rIdx] = {
+                        id: q.id,
+                        difficulty: q.difficulty,
+                        found: false,
+                        status: 'access_error',
+                        is_correct: false,
+                        error: err.message,
+                        is_running: false
+                    };
+                }
+
+                renderBenchmarkTable();
+                updateBenchmarkStats();
+            }
+
+            isBenchRunning = false;
+            document.getElementById('btn-run-all-bench').disabled = false;
+            document.getElementById('bench-run-indicator').textContent = 'Evaluation Concluded';
+        }
+
+        function exportBenchmarkJson() {
+            if (benchmarkResults.length === 0) {
+                alert("Please run the benchmark before exporting results.");
+                return;
+            }
+            const cleanOutput = benchmarkResults.map(r => ({
+                id: r.id,
+                found: r.found,
+                status: r.status || (r.found ? "found" : "not_found_on_site"),
+                answer: r.answer || null,
+                evidence_quote: r.evidence_quote || null,
+                source_url: r.source_url || null,
+                explanation: r.explanation || null,
+                steps: r.steps || 0,
+                elapsed_seconds: r.elapsed_seconds || 0.0
+            }));
+
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(cleanOutput, null, 2));
+            const dlAnchor = document.createElement('a');
+            dlAnchor.setAttribute("href", dataStr);
+            dlAnchor.setAttribute("download", "match4_evaluation_results.json");
+            document.body.appendChild(dlAnchor);
+            dlAnchor.click();
+            dlAnchor.remove();
         }
     </script>
 </body>
